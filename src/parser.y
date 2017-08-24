@@ -1,55 +1,80 @@
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
-  FILE *yyin;
-  int yylex (void);
-  void yyerror (char const *s);
+void yyerror (char *s);
+#include <stdio.h>     /* C declarations used in actions */
+#include <stdlib.h>
+ 
+int symbols[52];
+int symbolVal(char symbol);
+void updateSymbolVal(char symbol, int val);
 %}
 
-%token declaration_list
-%token statement_list
-%token NUMBER
-%token IDENTIFIER
-%token ETOK
-%left '+'
-%left '*'
+%union {int num; char* id;}         /* Yacc definitions */
+
+%start program;
+
+%token int_datatype
+%token <id> array_size
+%token print
+%token comma
+%token read_token
+%token codeblock
+%token declblock
+%token println
+%token exit_command
+%token <num> number
+%token <id> identifier
+%token <id> string
+%type <num> line exp term
 
 %%
 
-program:	decl_block code_block
+/* descriptions of expected inputs     corresponding actions (in C) */
 
-decl_block:  '{' declaration_list '}'
+program : code_line ;
 
-code_block:  '{' statement_list '}'
+program : declblock '{' decl_statements '}'  codeblock '{' code_line '}' ; 
 
-/*
-expr	: 	expr '+' expr 
-	|	expr '*' expr 
-	| 	NUMBER
-	|	IDENTIFIER
-	;
-*/
+/* declaration statements */
+decl_statements : int_datatype literals ';' {;}
+                 | decl_statements int_datatype literals ';' {;}
+                 ;
 
-%%
+/* comma separated values */
+literals : literals comma final_identifier {;}
+           | final_identifier {;} 
+           ;
 
-void yyerror (char const *s)
-{
-       fprintf (stderr, "%s\n", s);
-}
+/* the final identifier array or simple variable */
+final_identifier : identifier {printf("setting up var %s\n",$1);}
+                  | identifier array_size {printf("setting up arrar %s\n",$2);}
+                  ;
+ 
+code_line :      print printexp ';'		{;}
+                 | read_token scan_iden ';' {;}
+                 | code_line print printexp ';'	{;}
+                 | code_line read_token scan_iden ';' {;}
+                 ;
 
-int main(int argc, char *argv[])
-{
-	if (argc == 1 ) {
-		fprintf(stderr, "Correct usage: bcc filename\n");
-		exit(1);
+scan_iden   :    identifier {printf("scanning var %s\n",$1);}  ;
+
+printexp :      printexp comma final_printexp {;}
+                | final_printexp {;}
+                ;
+
+final_printexp : identifier {printf("print var %s\n",$1);}
+               | string {printf("print string %s\n",$1);}
+               ;
+
+%%                     /* C code */
+
+int main (void) {
+	/* init symbol table */
+	int i;
+	for(i=0; i<52; i++) {
+		symbols[i] = 0;
 	}
 
-	if (argc > 2) {
-		fprintf(stderr, "Passing more arguments than necessary.\n");
-		fprintf(stderr, "Correct usage: bcc filename\n");
-	}
-
-	yyin = fopen(argv[1], "r");
-
-	yyparse();
+	return yyparse ( );
 }
+
+void yyerror (char *s) {fprintf (stderr, "%s\n", s);}

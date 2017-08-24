@@ -1,26 +1,25 @@
 %{
-#include "parser.tab.h"
+#include "y.tab.h"
 %}
 
 %%
-"declaration_list"			return declaration_list;
-"statement_list"		return statement_list;
-[0-9][0-9]*	{  
-			printf("Token type: Number, Lexeme/Token Value: %s\n", yytext);  
-			return NUMBER; 
-                }
-[a-zA-Z][a-zA-Z0-9]* {  
-			printf("Token type: Identifier, Lexeme/Token Value: %s\n", yytext);  
-			return IDENTIFIER; 
-		     } 
-"+"		return '+';
-"-"		return '-';
-"*"		return '*';
-"{"		return '{';
-"}"		return '}';
+"declblock"	 {return declblock;}
+"codeblock"      {return codeblock;}
+"int"            {return int_datatype;}
+"println"        {return println;}
+"print"          {return print;}
+"read"           {return read_token;}
+"exit"	         {return exit_command;}
+\"[^\"]*\"       {yylval.id = yytext ; return string ;}
+","              {return comma;}
 
-[ \t]		{ /* Do nothing */ }
-.		{ 
-		  printf("Unexpected token encountered: %s\n", yytext); 
-		  return ETOK;
-		}
+\[[1-9][0-9]*\]  {yylval.id = yytext; return array_size ;}
+[a-zA-Z]+	 {yylval.id = yytext; return identifier;}
+[0-9]+           {yylval.num = atoi(yytext); return number;}
+[ \t\n]                ;
+[-f+={};]           	   {return yytext[0];}
+.                      {ECHO; yyerror ("unexpected character");}
+
+%%
+int yywrap (void) {return 1;}
+
