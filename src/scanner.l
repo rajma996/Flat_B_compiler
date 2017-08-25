@@ -1,5 +1,5 @@
 %{
-#include "y.tab.h"
+#include "parser.tab.h"
 %}
 
 %%
@@ -10,14 +10,33 @@
 "print"          {return print;}
 "read"           {return read_token;}
 "exit"	         {return exit_command;}
-\"[^\"]*\"       {yylval.id = yytext ; return string ;}
+\"[a-zA-Z0-9]*\"       {yylval.id = yytext ; return string ;}
+"{"              {return lcb;}
+"}"              {return rcb;}
+"("              {return lrb;}
+")"              {return rrb;}
 ","              {return comma;}
+"+"              {return plus;}
+"-"              {return minus;}
+"*"              {return mul;}
+"/"              {return divi;}
+"<"              {return lt;}
+"<="             {return lte;}
+">"              {return gt;}
+">="             {return gte;}
+"="              {return eq;}
+"=="             {return eqeq;}
+"!="             {return neq;}
+"&&"             {return and;}
+"||"             {return or;}
+"%"              {return mod;}
 
-\[[1-9][0-9]*\]  {yylval.id = yytext; return array_size ;}
+\[[1-9][0-9]*\]  {yylval.id = yytext; return array_num_index ;}
+\[[a-zA-Z]\]     {yylval.id = yytext; return array_identi_index ;}
 [a-zA-Z]+	 {yylval.id = yytext; return identifier;}
 [0-9]+           {yylval.num = atoi(yytext); return number;}
 [ \t\n]                ;
-[-f+={};]           	   {return yytext[0];}
+[-f+=!;]           	   {return yytext[0];}
 .                      {ECHO; yyerror ("unexpected character");}
 
 %%
