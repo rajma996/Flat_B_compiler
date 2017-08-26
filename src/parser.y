@@ -14,7 +14,9 @@ void updateSymbolVal(char symbol, int val);
 
 %token int_datatype
 %token <id> array_num_index
-%token <id> array_identi_index 
+%token <id> array_identi_index
+%token if_token
+%token for_token
 %token print
 %token comma
 %token read_token
@@ -77,18 +79,27 @@ final_identifier : identifier {printf("setting up var %s\n",$1);}
                   ;
 
 /* all possible code lines : print, read */
-code_line :      assignment ';'                       {;}
+code_line :      for_statement                        {;}
+                 | if_statement                       {;}
+                 | assignment ';'                     {;}
                  | print printexp ';'		      {;}
                  | read_token scan_iden ';'           {;}
                  | code_line print printexp ';'	      {;}
                  | code_line read_token scan_iden ';' {;}
                  | code_line assignment ';'           {;}
+                 | code_line if_statement             {;}
+                 | code_line for_statement            {;}
                  ;
 
-assignment : assignment_lhs eq exp  {;}
+if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
+
+for_statement : for_token identifier eq number comma number lcb code_line rcb {;} ;
+
+
+assignment : variables eq exp  {;}
            ;
 
-assignment_lhs : identifier | identifier array_num_index | identifier array_identi_index {;}
+variables : identifier | identifier array_num_index | identifier array_identi_index {;}
 
 
 exp     :  exp plus exp {;}

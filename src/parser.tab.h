@@ -48,34 +48,36 @@ extern int yydebug;
     int_datatype = 258,
     array_num_index = 259,
     array_identi_index = 260,
-    print = 261,
-    comma = 262,
-    read_token = 263,
-    codeblock = 264,
-    declblock = 265,
-    println = 266,
-    lcb = 267,
-    rcb = 268,
-    lrb = 269,
-    rrb = 270,
-    plus = 271,
-    minus = 272,
-    mul = 273,
-    lt = 274,
-    lte = 275,
-    gt = 276,
-    gte = 277,
-    eq = 278,
-    eqeq = 279,
-    neq = 280,
-    and = 281,
-    or = 282,
-    mod = 283,
-    divi = 284,
-    exit_command = 285,
-    number = 286,
-    identifier = 287,
-    string = 288
+    if_token = 261,
+    for_token = 262,
+    print = 263,
+    comma = 264,
+    read_token = 265,
+    codeblock = 266,
+    declblock = 267,
+    println = 268,
+    lcb = 269,
+    rcb = 270,
+    lrb = 271,
+    rrb = 272,
+    plus = 273,
+    minus = 274,
+    mul = 275,
+    lt = 276,
+    lte = 277,
+    gt = 278,
+    gte = 279,
+    eq = 280,
+    eqeq = 281,
+    neq = 282,
+    and = 283,
+    or = 284,
+    mod = 285,
+    divi = 286,
+    exit_command = 287,
+    number = 288,
+    identifier = 289,
+    string = 290
   };
 #endif
 
@@ -87,7 +89,7 @@ union YYSTYPE
 #line 11 "parser.y" /* yacc.c:1909  */
 int num; char* id;
 
-#line 91 "parser.tab.h" /* yacc.c:1909  */
+#line 93 "parser.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

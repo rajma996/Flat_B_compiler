@@ -10,7 +10,9 @@
 "print"          {return print;}
 "read"           {return read_token;}
 "exit"	         {return exit_command;}
-\"[a-zA-Z0-9]*\"       {yylval.id = yytext ; return string ;}
+"if"             {return if_token;}
+"for"            {return for_token;}
+\"[^\"]*\"       {yylval.id = yytext ; return string ;}
 "{"              {return lcb;}
 "}"              {return rcb;}
 "("              {return lrb;}
