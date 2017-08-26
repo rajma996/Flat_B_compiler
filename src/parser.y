@@ -46,18 +46,12 @@ void updateSymbolVal(char symbol, int val);
 %token <id> string
 %type <num> term
 
-%right eq
-%left eqeq
-%left neq
-%left and
-%left of 
-%left lt
-%left gte
-%left lte
-%left gt
-%left plus
-%left minus 
-%left mul divi mod ;
+%left eqeq neq
+%left and or
+%left lt gt lte gte
+%left plus minus
+%left mul divi
+
 
 %%
 
@@ -91,28 +85,32 @@ code_line :      assignment ';'                       {;}
                  | code_line assignment ';'           {;}
                  ;
 
-assignment : identifier eq exp  {;}
+assignment : assignment_lhs eq exp  {;}
            ;
 
-exp     : exp binop exp  | lrb exp rrb | term  {;}
-        ;
+assignment_lhs : identifier | identifier array_num_index | identifier array_identi_index {;}
 
-term    : identifier | number  {;}
-        ;
 
-binop   : arithop | relop | eqop  | condop {;}
-        ;
+exp     :  exp plus exp {;}
+           | exp minus exp {;}
+           | exp mul exp {;}
+           | exp divi exp {;}
+           | exp lt exp {;}
+           | exp gt exp {;}
+           | exp lte exp {;}
+           | exp gte exp {;}
+           | exp or exp {;}
+           | exp and exp {;}
+           | exp eqeq exp {;}
+           | exp neq exp {;}
+           | lrb exp rrb {;} 
+           | term {;}
+           ;
 
-arithop : plus | minus | mul | divi {;}
-        ;
-
-relop   : lt | lte | gt | gte {;}
-        ;
-
-eqop    : eqeq | neq {;}
-        ;
-
-condop  : and | or  {;}
+term    : identifier {;}
+        | number {;}
+        | identifier array_num_index {;}
+        | identifier array_identi_index {;}
         ;
 
 scan_iden   :    identifier {printf("scanning var %s\n",$1);} ;
@@ -125,6 +123,8 @@ printexp :      printexp comma final_printexp {;}
 /*string or identifier as component of print statement */
 final_printexp : identifier {printf("print var %s\n",$1);}
                | string {printf("print string %s\n",$1);}
+               | identifier array_num_index {;}
+               | identifier array_identi_index {;}
                ;
 
 %%       /* C code */

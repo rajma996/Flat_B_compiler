@@ -75,8 +75,7 @@ extern int yydebug;
     exit_command = 285,
     number = 286,
     identifier = 287,
-    string = 288,
-    of = 289
+    string = 288
   };
 #endif
 
@@ -88,7 +87,7 @@ union YYSTYPE
 #line 11 "parser.y" /* yacc.c:1909  */
 int num; char* id;
 
-#line 92 "parser.tab.h" /* yacc.c:1909  */
+#line 91 "parser.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

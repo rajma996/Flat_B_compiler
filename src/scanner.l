@@ -32,7 +32,7 @@
 "%"              {return mod;}
 
 \[[1-9][0-9]*\]  {yylval.id = yytext; return array_num_index ;}
-\[[a-zA-Z]\]     {yylval.id = yytext; return array_identi_index ;}
+\[[a-zA-Z]+\]     {yylval.id = yytext; return array_identi_index ;}
 [a-zA-Z]+	 {yylval.id = yytext; return identifier;}
 [0-9]+           {yylval.num = atoi(yytext); return number;}
 [ \t\n]                ;
