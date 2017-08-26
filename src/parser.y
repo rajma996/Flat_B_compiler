@@ -10,7 +10,7 @@ void updateSymbolVal(char symbol, int val);
 
 %union {int num; char* id;}         /* Yacc definitions */
 
-%start program;
+%start code_line;
 
 %token int_datatype
 %token <id> array_num_index
@@ -61,7 +61,6 @@ void updateSymbolVal(char symbol, int val);
 
 /* descriptions of expected inputs     corresponding actions (in C) */
 
-program : code_line ;
 
 program : declblock lcb decl_statements rcb  codeblock lcb code_line rcb ; 
 
@@ -88,12 +87,15 @@ code_line :      goto_statement ';'                   {;}
                  | assignment ';'                     {;}
                  | print printexp ';'		      {;}
                  | read_token scan_iden ';'           {;}
-                 | code_line print printexp ';'	    {;}
+
+                 | code_line print printexp ';'	      {;}
                  | code_line read_token scan_iden ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
+
+
                  ;
 
 if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
