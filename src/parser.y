@@ -15,6 +15,7 @@ void updateSymbolVal(char symbol, int val);
 %token int_datatype
 %token <id> array_num_index
 %token <id> array_identi_index
+%token <id> label
 %token if_token
 %token for_token
 %token print
@@ -23,6 +24,8 @@ void updateSymbolVal(char symbol, int val);
 %token codeblock
 %token declblock
 %token println
+%token goto_token
+%token colon
 %token lcb
 %token rcb
 %token lrb
@@ -54,7 +57,6 @@ void updateSymbolVal(char symbol, int val);
 %left plus minus
 %left mul divi
 
-
 %%
 
 /* descriptions of expected inputs     corresponding actions (in C) */
@@ -78,23 +80,28 @@ final_identifier : identifier {printf("setting up var %s\n",$1);}
                   | identifier array_num_index {printf("setting up arrar %s\n",$2);}
                   ;
 
+
 /* all possible code lines : print, read */
-code_line :      for_statement                        {;}
+code_line :      goto_statement ';'                   {;}
+                 | for_statement                      {;}
                  | if_statement                       {;}
                  | assignment ';'                     {;}
                  | print printexp ';'		      {;}
                  | read_token scan_iden ';'           {;}
-                 | code_line print printexp ';'	      {;}
+                 | code_line print printexp ';'	    {;}
                  | code_line read_token scan_iden ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
                  | code_line for_statement            {;}
+                 | code_line goto_statement ';'       {;}
                  ;
 
 if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
 
 for_statement : for_token identifier eq number comma number lcb code_line rcb {;} ;
 
+
+goto_statement : goto_token label if_token exp   
 
 assignment : variables eq exp  {;}
            ;
