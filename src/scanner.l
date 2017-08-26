@@ -36,7 +36,7 @@
 [a-zA-Z]+	 {yylval.id = yytext; return identifier;}
 [0-9]+           {yylval.num = atoi(yytext); return number;}
 [ \t\n]                ;
-[-f+=!;]           	   {return yytext[0];}
+[-f+!;]           	   {return yytext[0];}
 .                      {ECHO; yyerror ("unexpected character");}
 
 %%

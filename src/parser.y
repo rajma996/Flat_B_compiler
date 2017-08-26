@@ -46,10 +46,17 @@ void updateSymbolVal(char symbol, int val);
 %token <id> string
 %type <num> term
 
-%left eqeq neq
-%left and of 
-%left lt gte lte gt
-%left plus minus 
+%right eq
+%left eqeq
+%left neq
+%left and
+%left of 
+%left lt
+%left gte
+%left lte
+%left gt
+%left plus
+%left minus 
 %left mul divi mod ;
 
 %%
@@ -81,6 +88,7 @@ code_line :      assignment ';'                       {;}
                  | read_token scan_iden ';'           {;}
                  | code_line print printexp ';'	      {;}
                  | code_line read_token scan_iden ';' {;}
+                 | code_line assignment ';'           {;}
                  ;
 
 assignment : identifier eq exp  {;}
