@@ -10,7 +10,7 @@ void updateSymbolVal(char symbol, int val);
 
 %union {int num; char* id;}         /* Yacc definitions */
 
-%start code_line;
+%start program;
 
 %token int_datatype
 %token <id> array_num_index
@@ -59,10 +59,14 @@ void updateSymbolVal(char symbol, int val);
 
 %%
 
-/* descriptions of expected inputs     corresponding actions (in C) */
+/* descriptions of expected inputs corresponding actions (in C) */
+program : declblock  empty_nonempty_decl_statements codeblock empty_nonempty_code_block  ;
 
+empty_nonempty_code_block : lcb rcb {;}
+                          | lcb code_line rcb {;}
 
-program : declblock lcb decl_statements rcb  codeblock lcb code_line rcb ; 
+empty_nonempty_decl_statements : lcb rcb {;}
+                               | lcb decl_statements rcb {;} 
 
 /* declaration statements */
 decl_statements : int_datatype literals ';' {;}
@@ -79,15 +83,13 @@ final_identifier : identifier {printf("setting up var %s\n",$1);}
                   | identifier array_num_index {printf("setting up arrar %s\n",$2);}
                   ;
 
-
-/* all possible code lines : print, read */
+/* all possible code lines : print, read, if, for, assignment,goto */
 code_line :      goto_statement ';'                   {;}
                  | for_statement                      {;}
                  | if_statement                       {;}
                  | assignment ';'                     {;}
                  | print printexp ';'		      {;}
                  | read_token scan_iden ';'           {;}
-
                  | code_line print printexp ';'	      {;}
                  | code_line read_token scan_iden ';' {;}
                  | code_line assignment ';'           {;}
@@ -95,15 +97,13 @@ code_line :      goto_statement ';'                   {;}
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
 
-
                  ;
 
 if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
 
 for_statement : for_token identifier eq number comma number lcb code_line rcb {;} ;
 
-
-goto_statement : goto_token label if_token exp   
+goto_statement : goto_token label if_token exp | goto_token label {;} ;
 
 assignment : variables eq exp  {;}
            ;
