@@ -90,13 +90,14 @@ code_line :      goto_statement ';'                   {;}
                  | assignment ';'                     {;}
                  | print printexp ';'		      {;}
                  | read_token scan_iden ';'           {;}
+                 | label colon                        {;}
                  | code_line print printexp ';'	      {;}
                  | code_line read_token scan_iden ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
-
+                 | code_line label colon              {;}
                  ;
 
 if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
