@@ -63,8 +63,8 @@ extern int yydebug;
     rcb = 273,
     lrb = 274,
     rrb = 275,
-    plus = 276,
-    minus = 277,
+    pluss = 276,
+    minuss = 277,
     mul = 278,
     lt = 279,
     lte = 280,
@@ -73,30 +73,18 @@ extern int yydebug;
     eq = 283,
     eqeq = 284,
     neq = 285,
-    and = 286,
-    or = 287,
+    andand = 286,
+    oror = 287,
     mod = 288,
     divi = 289,
     exit_command = 290,
     number = 291,
     identifier = 292,
-    string = 293
+    strings = 293
   };
 #endif
 
 /* Value type.  */
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE YYSTYPE;
-union YYSTYPE
-{
-#line 11 "parser.y" /* yacc.c:1909  */
-int num; char* id;
-
-#line 96 "parser.tab.h" /* yacc.c:1909  */
-};
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
-#endif
 
 
 extern YYSTYPE yylval;

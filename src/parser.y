@@ -1,14 +1,18 @@
 %{
-void yyerror (char *s);
-#include <stdio.h>     /* C declarations used in actions */
-#include <stdlib.h>
+#include<bits/stdc++.h>
+#include"ASTDefinitions.h"
+  
+  
+using namespace std;
+int yylex();
+extern union node yylval;
+
+ int errors;
+ void yyerror(char *);
  
-int symbols[52];
-int symbolVal(char symbol);
-void updateSymbolVal(char symbol, int val);
 %}
 
-%union {int num; char* id;}         /* Yacc definitions */
+
 
 %start program;
 
@@ -30,8 +34,8 @@ void updateSymbolVal(char symbol, int val);
 %token rcb
 %token lrb
 %token rrb
-%token plus
-%token minus
+%token pluss
+%token minuss
 %token mul
 %token lt
 %token lte
@@ -40,38 +44,38 @@ void updateSymbolVal(char symbol, int val);
 %token eq
 %token eqeq
 %token neq
-%token and
-%token  or
+%token andand
+%token  oror
 %token mod
 %token divi
 
 %token exit_command
 %token <num> number
 %token <id> identifier
-%token <id> string
-%type <num> term
+%token <id> strings
+%type <ter> term
 
 %left eqeq neq
-%left and or
+%left andand oror
 %left lt gt lte gte
-%left plus minus
+%left pluss minuss
 %left mul divi
 
 %%
 
 /* descriptions of expected inputs corresponding actions (in C) */
-program : declblock  empty_nonempty_decl_statements codeblock empty_nonempty_code_block  ;
+program : declblock decl_statements codeblock code_statements ;
 
-empty_nonempty_code_block : lcb rcb {;}
-                          | lcb code_line rcb {;}
-
-empty_nonempty_decl_statements : lcb rcb {;}
-                               | lcb decl_statements rcb {;} 
+decl_statements : lcb rcb  {;}
+                | lcb decl_statement rcb {;}
 
 /* declaration statements */
-decl_statements : int_datatype literals ';' {;}
-                 | decl_statements int_datatype literals ';' {;}
+decl_statement : int_datatype literals ';' {;}
+                 | decl_statement int_datatype literals ';' {;}
                  ;
+
+code_statements : lcb rcb  {;}
+                | lcb code_line rcb {;}
 
 /* comma separated values */
 literals : literals comma final_identifier {;}
@@ -95,6 +99,7 @@ code_line :      goto_statement ';'                   {;}
                  | code_line read_token scan_iden ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
+
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
                  | code_line label colon              {;}
@@ -112,23 +117,23 @@ assignment : variables eq exp  {;}
 variables : identifier | identifier array_num_index | identifier array_identi_index {;}
 
 
-exp     :  exp plus exp {;}
-           | exp minus exp {;}
+exp     :  exp pluss exp {;}
+           | exp minuss exp {;}
            | exp mul exp {;}
            | exp divi exp {;}
            | exp lt exp {;}
            | exp gt exp {;}
            | exp lte exp {;}
            | exp gte exp {;}
-           | exp or exp {;}
-           | exp and exp {;}
+           | exp oror exp {;}
+           | exp andand exp {;}
            | exp eqeq exp {;}
            | exp neq exp {;}
            | lrb exp rrb {;} 
            | term {;}
            ;
 
-term    : identifier {;}
+term    : identifier {cout<<"her"<<endl; $$ = new term(1,5 ); }
         | number {;}
         | identifier array_num_index {;}
         | identifier array_identi_index {;}
@@ -137,27 +142,25 @@ term    : identifier {;}
 scan_iden   :    identifier {printf("scanning var %s\n",$1);} ;
 
 /* print expression after print key word,comma separated identifiers or strings  */
+
 printexp :      printexp comma final_printexp {;}
                 | final_printexp {;}
                 ;
 
 /*string or identifier as component of print statement */
 final_printexp : identifier {printf("print var %s\n",$1);}
-               | string {printf("print string %s\n",$1);}
+               | strings {printf("print string %s\n",$1);}
                | identifier array_num_index {;}
                | identifier array_identi_index {;}
                ;
 
 %%       /* C code */
 
-int main (void) {
-	/* init symbol table */
-	int i;
-	for(i=0; i<52; i++) {
-		symbols[i] = 0;
-	}
-
-	return yyparse ( );
+int main (void)
+{
+/* init symbol table */
+  errors = 0;
+  return yyparse ();
 }
 
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);}

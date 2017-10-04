@@ -1,5 +1,10 @@
 %{
+#include "ASTDefinitions.h"
 #include "parser.tab.h"
+extern union node yylval;
+using namespace std;
+extern int errors;
+
 %}
 
 %%
@@ -14,14 +19,14 @@
 "for"            {return for_token;}
 "goto"           {return goto_token;}
 
-\"[^\"]*\"       {yylval.id = yytext ; return string ;}
+\"[^\"]*\"       {yylval.id = yytext ; return strings ;}
 "{"              {return lcb;}
 "}"              {return rcb;}
 "("              {return lrb;}
 ")"              {return rrb;}
 ","              {return comma;}
-"+"              {return plus;}
-"-"              {return minus;}
+"+"              {return pluss;}
+"-"              {return minuss;}
 "*"              {return mul;}
 "/"              {return divi;}
 "<"              {return lt;}
@@ -31,8 +36,8 @@
 "="              {return eq;}
 "=="             {return eqeq;}
 "!="             {return neq;}
-"&&"             {return and;}
-"||"             {return or;}
+"&&"             {return andand;}
+"||"             {return oror;}
 "%"              {return mod;}
 ":"              {return colon;}
 \[[1-9][0-9]*\]  {yylval.id = yytext; return array_num_index ;}
@@ -41,8 +46,8 @@
 [A-Z]+[0-9]+     {yylval.id = yytext; return label;}
 [0-9]+           {yylval.num = atoi(yytext); return number;}
 [ \t\n]                ;
-[-f+!;]           	   {return yytext[0];}
-.                      {ECHO; yyerror ("unexpected character");}
+[-f+!;]        	   {return yytext[0];}
+.                { errors++ ; }
 %%
 int yywrap (void) {return 1;}
 
