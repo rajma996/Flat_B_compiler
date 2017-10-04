@@ -133,7 +133,7 @@ exp     :  exp pluss exp {;}
            | term {;}
            ;
 
-term    : identifier {cout<<"her"<<endl; $$ = new term(1,5 ); }
+term    : identifier {cout<<"her"<<endl; $$ = new ASTterm(1,5 ); }
         | number {;}
         | identifier array_num_index {;}
         | identifier array_identi_index {;}

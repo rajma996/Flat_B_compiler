@@ -1584,7 +1584,7 @@ yyreduce:
 
   case 49:
 #line 136 "parser.y" /* yacc.c:1646  */
-    {cout<<"her"<<endl; (yyval.ter) = new term(1,5 ); }
+    {cout<<"her"<<endl; (yyval.ter) = new ASTterm(1,5 ); }
 #line 1589 "parser.tab.c" /* yacc.c:1646  */
     break;
 

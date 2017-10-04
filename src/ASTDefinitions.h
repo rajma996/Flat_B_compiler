@@ -5,7 +5,7 @@ union node
 {
   int num;
   char* id;
-  class term* ter;
+  class ASTterm* ter;
 };
 union termraj {int s1; int s2;};
 
@@ -20,7 +20,7 @@ class ASTterm : public ASTnode
  private :
   termraj no;
  public :
-  term(int ty,int s) {if (ty==1) no.s1=5; else no.s2=6;}
+  ASTterm(int ty,int s) {if (ty==1) no.s1=5; else no.s2=6;}
 };
 
 
