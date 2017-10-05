@@ -77,10 +77,12 @@ extern int yydebug;
     oror = 287,
     mod = 288,
     divi = 289,
-    exit_command = 290,
-    number = 291,
-    identifier = 292,
-    strings = 293
+    rsb = 290,
+    lsb = 291,
+    exit_command = 292,
+    number = 293,
+    identifier = 294,
+    strings = 295
   };
 #endif
 

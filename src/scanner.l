@@ -18,7 +18,6 @@ extern int errors;
 "if"             {return if_token;}
 "for"            {return for_token;}
 "goto"           {return goto_token;}
-
 \"[^\"]*\"       {yylval.id = yytext ; return strings ;}
 "{"              {return lcb;}
 "}"              {return rcb;}
@@ -40,8 +39,8 @@ extern int errors;
 "||"             {return oror;}
 "%"              {return mod;}
 ":"              {return colon;}
-\[[1-9][0-9]*\]  {yylval.id = yytext; return array_num_index ;}
-\[[a-zA-Z]+\]    {yylval.id = yytext; return array_identi_index ;}
+"["              {return lsb;}
+"]"              {return rsb;}
 [a-zA-Z]+	 {yylval.id = yytext; return identifier;}
 [A-Z]+[0-9]+     {yylval.id = yytext; return label;}
 [0-9]+           {yylval.num = atoi(yytext); return number;}

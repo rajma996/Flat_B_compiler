@@ -14,8 +14,6 @@ extern union node yylval;
 
 
 
-%start program;
-
 %token int_datatype
 %token <id> array_num_index
 %token <id> array_identi_index
@@ -48,6 +46,8 @@ extern union node yylval;
 %token  oror
 %token mod
 %token divi
+%token rsb
+%token lsb
 
 %token exit_command
 %token <num> number
@@ -61,9 +61,14 @@ extern union node yylval;
 %left pluss minuss
 %left mul divi
 
+%start program;
+
 %%
 
 /* descriptions of expected inputs corresponding actions (in C) */
+
+temp : lsb  number rsb  {printf("%d\n",$2);} ;
+
 program : declblock decl_statements codeblock code_statements ;
 
 decl_statements : lcb rcb  {;}
@@ -84,7 +89,7 @@ literals : literals comma final_identifier {;}
 
 /* the final identifier array or simple variable */
 final_identifier : identifier {printf("setting up var %s\n",$1);}
-                  | identifier array_num_index {printf("setting up arrar %s\n",$2);}
+                  | identifier  lsb  number rsb {printf("setting up arrar %d\n",$3);}
                   ;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
@@ -114,7 +119,7 @@ goto_statement : goto_token label if_token exp | goto_token label {;} ;
 assignment : variables eq exp  {;}
            ;
 
-variables : identifier | identifier array_num_index | identifier array_identi_index {;}
+variables : identifier | identifier lsb number rsb | identifier lsb identifier rsb {;}
 
 
 exp     :  exp pluss exp {;}
@@ -133,10 +138,10 @@ exp     :  exp pluss exp {;}
            | term {;}
            ;
 
-term    : identifier {cout<<"her"<<endl; $$ = new ASTterm(1,5 ); }
+term    : identifier {cout<<"her"<<endl; $$ = new ASTterm(1,5); }
         | number {;}
-        | identifier array_num_index {;}
-        | identifier array_identi_index {;}
+        | identifier lsb number rsb {;}
+        | identifier lsb identifier rsb {;}
         ;
 
 scan_iden   :    identifier {printf("scanning var %s\n",$1);} ;
@@ -150,8 +155,8 @@ printexp :      printexp comma final_printexp {;}
 /*string or identifier as component of print statement */
 final_printexp : identifier {printf("print var %s\n",$1);}
                | strings {printf("print string %s\n",$1);}
-               | identifier array_num_index {;}
-               | identifier array_identi_index {;}
+               | identifier lsb number rsb {;}
+               | identifier lsb identifier rsb {;}
                ;
 
 %%       /* C code */
