@@ -14,3 +14,9 @@ ASTvariables::ASTvariables(string var_type,string size_type, string name,int int
   this->ide_size = ide_size;
 }
 
+ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
+{
+  this->str = str;
+  this->var = var;
+}
+

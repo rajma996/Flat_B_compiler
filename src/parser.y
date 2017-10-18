@@ -60,6 +60,7 @@ extern union node yylval;
 %left mul divi
 
 %type <variables> variables
+%type <final_printexp> final_printexp 
 
 %start program;
 
@@ -149,8 +150,8 @@ printexp :      printexp comma final_printexp {;}
                 ;
 
 /*string or identifier as component of print statement */
-final_printexp : strings {printf("print string %s\n",$1);}
-               | variables {;}
+final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); printf("print string %s\n",$1);} 
+| variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
 
 %%       /* C code */

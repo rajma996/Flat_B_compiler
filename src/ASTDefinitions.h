@@ -6,6 +6,7 @@ union node
   int num;
   char* id;
   class ASTvariables* variables;
+  class ASTfinal_printexp* final_printexp;
 };
 
 typedef union node YYSTYPE;
@@ -27,5 +28,11 @@ class ASTvariables : public ASTnode
   ASTvariables(string var_type,string size_type, string name,int int_size,string ide_size ) ;
 };
 
-
-
+class ASTfinal_printexp: public ASTnode
+{
+ private:
+  string str;
+  class ASTvariables* var;
+ public :
+  ASTfinal_printexp(string str,class ASTvariables* var);
+};
