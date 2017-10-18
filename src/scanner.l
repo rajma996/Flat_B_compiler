@@ -2,6 +2,7 @@
 #include "ASTDefinitions.h"
 #include "parser.tab.h"
 extern union node yylval;
+extern "C" int yylex();
 using namespace std;
 extern int errors;
 

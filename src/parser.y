@@ -2,17 +2,15 @@
 #include<bits/stdc++.h>
 #include"ASTDefinitions.h"
   
-  
 using namespace std;
-int yylex();
+extern "C" int yylex();
 extern union node yylval;
 
  int errors;
  void yyerror(char *);
+
  
 %}
-
-
 
 %token int_datatype
 %token <id> array_num_index
@@ -61,13 +59,14 @@ extern union node yylval;
 %left pluss minuss
 %left mul divi
 
+%type <variables> variables
+
 %start program;
 
 %%
 
 /* descriptions of expected inputs corresponding actions (in C) */
 
-temp : lsb  number rsb  {printf("%d\n",$2);} ;
 
 program : declblock decl_statements codeblock code_statements ;
 
@@ -89,8 +88,7 @@ literals : literals comma final_identifier {;}
 
 /* the final identifier array or simple variable */
 final_identifier : identifier {printf("setting up var %s\n",$1);}
-                  | identifier  lsb  number rsb {printf("setting up arrar %d\n",$3);}
-                  ;
+                  | identifier  lsb  number rsb {printf("setting up arrar %d\n",$3);}                  ;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
 code_line :      goto_statement ';'                   {;}
@@ -98,13 +96,12 @@ code_line :      goto_statement ';'                   {;}
                  | if_statement                       {;}
                  | assignment ';'                     {;}
                  | print printexp ';'		      {;}
-                 | read_token scan_iden ';'           {;}
+                 | read_token variables ';'           {;}
                  | label colon                        {;}
                  | code_line print printexp ';'	      {;}
-                 | code_line read_token scan_iden ';' {;}
+                 | code_line read_token variables ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
-
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
                  | code_line label colon              {;}
@@ -119,7 +116,9 @@ goto_statement : goto_token label if_token exp | goto_token label {;} ;
 assignment : variables eq exp  {;}
            ;
 
-variables : identifier | identifier lsb number rsb | identifier lsb identifier rsb {;}
+variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
+            | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");}; 
+| identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
 
 
 exp     :  exp pluss exp {;}
@@ -138,13 +137,10 @@ exp     :  exp pluss exp {;}
            | term {;}
            ;
 
-term    : identifier {cout<<"her"<<endl; $$ = new ASTterm(1,5); }
-        | number {;}
-        | identifier lsb number rsb {;}
-        | identifier lsb identifier rsb {;}
+term    : number {;}
+        | variables {;}
         ;
 
-scan_iden   :    identifier {printf("scanning var %s\n",$1);} ;
 
 /* print expression after print key word,comma separated identifiers or strings  */
 
@@ -153,10 +149,8 @@ printexp :      printexp comma final_printexp {;}
                 ;
 
 /*string or identifier as component of print statement */
-final_printexp : identifier {printf("print var %s\n",$1);}
-               | strings {printf("print string %s\n",$1);}
-               | identifier lsb number rsb {;}
-               | identifier lsb identifier rsb {;}
+final_printexp : strings {printf("print string %s\n",$1);}
+               | variables {;}
                ;
 
 %%       /* C code */
@@ -166,6 +160,7 @@ int main (void)
 /* init symbol table */
   errors = 0;
   return yyparse ();
+  
 }
 
 void yyerror (char *s) {fprintf (stderr, "%s\n", s);}
