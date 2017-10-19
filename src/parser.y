@@ -51,7 +51,6 @@ extern union node yylval;
 %token <num> number
 %token <id> identifier
 %token <id> strings
-%type <ter> term
 
 %left eqeq neq
 %left andand oror
@@ -60,7 +59,9 @@ extern union node yylval;
 %left mul divi
 
 %type <variables> variables
-%type <final_printexp> final_printexp 
+%type <final_printexp> final_printexp
+%type <printexp> printexp
+%type <term> term
 
 %start program;
 
@@ -103,6 +104,7 @@ code_line :      goto_statement ';'                   {;}
                  | code_line read_token variables ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
+
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
                  | code_line label colon              {;}
@@ -138,15 +140,14 @@ exp     :  exp pluss exp {;}
            | term {;}
            ;
 
-term    : number {;}
-        | variables {;}
+term    : number { $$ = new ASTterm($1,NULL,"number")  ;}
+         | variables { $$ = new ASTterm(-1,$1,"variable") ;}
         ;
-
 
 /* print expression after print key word,comma separated identifiers or strings  */
 
-printexp :      printexp comma final_printexp {;}
-                | final_printexp {;}
+printexp :      printexp comma final_printexp { $$->push_back($3);  }
+                | final_printexp { $$ = new ASTprintexp($1); }
                 ;
 
 /*string or identifier as component of print statement */

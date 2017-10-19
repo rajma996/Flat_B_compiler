@@ -7,6 +7,8 @@ union node
   char* id;
   class ASTvariables* variables;
   class ASTfinal_printexp* final_printexp;
+  class ASTprintexp* printexp;
+  class ASTterm* term;
 };
 
 typedef union node YYSTYPE;
@@ -35,4 +37,23 @@ class ASTfinal_printexp: public ASTnode
   class ASTvariables* var;
  public :
   ASTfinal_printexp(string str,class ASTvariables* var);
+};
+
+class ASTprintexp: public ASTnode
+{
+ private:
+  vector<class ASTfinal_printexp*> printexp_vec;
+ public :
+  ASTprintexp(class ASTfinal_printexp * final_printexp);
+  void push_back(class ASTfinal_printexp * final_printexp);
+};
+
+class ASTterm: public ASTnode
+{
+ private:
+  int number;
+  class ASTvariables* variable;
+  string terminal_type; // type number or variable;
+ public :
+  ASTterm(int number,class ASTvariables* variable, string terminal_type);
 };

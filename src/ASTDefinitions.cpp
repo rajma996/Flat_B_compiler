@@ -20,3 +20,19 @@ ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
   this->var = var;
 }
 
+ASTprintexp::ASTprintexp(class ASTfinal_printexp * final_printexp)
+{
+  this->printexp_vec.push_back(final_printexp);
+}
+void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
+{
+  this->printexp_vec.push_back(final_printexp);
+}
+
+ASTterm::ASTterm(int number,class ASTvariables * variable, string terminal_type)
+{
+  this->number = number;
+  this->variable = variable;
+  this->terminal_type = terminal_type;
+}
+
