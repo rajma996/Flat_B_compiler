@@ -1497,7 +1497,7 @@ yyreduce:
 
   case 31:
 #line 120 "parser.y" /* yacc.c:1646  */
-    {;}
+    { (yyval.assignment) = new ASTassignment((yyvsp[-2].variables),(yyvsp[0].exp));}
 #line 1502 "parser.tab.c" /* yacc.c:1646  */
     break;
 

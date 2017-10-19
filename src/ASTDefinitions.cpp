@@ -45,3 +45,9 @@ ASTexp::ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string ope
   this->term = term;
 }
 
+ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp)
+{
+  this->variable = variable;
+  this->exp = exp;
+}
+

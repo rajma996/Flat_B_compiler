@@ -63,7 +63,7 @@ extern union node yylval;
 %type <printexp> printexp
 %type <term> term
 %type <exp> exp
-
+%type <assignment> assignment
 
 %start program;
 
@@ -117,7 +117,7 @@ for_statement : for_token identifier eq number comma number lcb code_line rcb {;
 
 goto_statement : goto_token label if_token exp | goto_token label {;} ;
 
-assignment : variables eq exp  {;}
+assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
            ;
 
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }

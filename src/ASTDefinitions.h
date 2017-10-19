@@ -10,6 +10,7 @@ union node
   class ASTprintexp* printexp;
   class ASTterm* term;
   class ASTexp* exp ;
+  class ASTassignment* assignment ;
 };
 
 typedef union node YYSTYPE;
@@ -69,4 +70,13 @@ class ASTexp :public ASTnode
   class ASTterm* term;
  public:
   ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term );
+};
+
+class ASTassignment :public ASTnode
+{
+ private :
+  class ASTvariables* variable;
+  class ASTexp* exp ;
+ public:
+  ASTassignment(class ASTvariables* variable, class ASTexp* exp);
 };
