@@ -51,3 +51,9 @@ ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp)
   this->exp = exp;
 }
 
+ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
+{
+  this->label = label;
+  this->exp = exp;
+}
+

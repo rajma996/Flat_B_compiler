@@ -64,6 +64,7 @@ extern union node yylval;
 %type <term> term
 %type <exp> exp
 %type <assignment> assignment
+%type <goto_statement> goto_statement
 
 %start program;
 
@@ -115,14 +116,15 @@ if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} 
 
 for_statement : for_token identifier eq number comma number lcb code_line rcb {;} ;
 
-goto_statement : goto_token label if_token exp | goto_token label {;} ;
+goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
+            | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
 
 assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
            ;
 
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
             | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");}; 
-| identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
+            | identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
 
 
 exp     :  exp pluss exp {;}

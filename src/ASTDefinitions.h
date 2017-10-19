@@ -11,6 +11,7 @@ union node
   class ASTterm* term;
   class ASTexp* exp ;
   class ASTassignment* assignment ;
+  class ASTgoto_statement* goto_statement;
 };
 
 typedef union node YYSTYPE;
@@ -79,4 +80,13 @@ class ASTassignment :public ASTnode
   class ASTexp* exp ;
  public:
   ASTassignment(class ASTvariables* variable, class ASTexp* exp);
+};
+
+class ASTgoto_statement : public ASTnode
+{
+ private :
+  string label;
+  class ASTexp* exp;
+ public :
+  ASTgoto_statement(string label, class ASTexp* exp);
 };
