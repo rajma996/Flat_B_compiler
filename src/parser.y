@@ -62,6 +62,8 @@ extern union node yylval;
 %type <final_printexp> final_printexp
 %type <printexp> printexp
 %type <term> term
+%type <exp> exp
+
 
 %start program;
 
@@ -104,7 +106,6 @@ code_line :      goto_statement ';'                   {;}
                  | code_line read_token variables ';' {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
-
                  | code_line for_statement            {;}
                  | code_line goto_statement ';'       {;}
                  | code_line label colon              {;}
@@ -125,19 +126,19 @@ variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
 
 
 exp     :  exp pluss exp {;}
-           | exp minuss exp {;}
-           | exp mul exp {;}
-           | exp divi exp {;}
-           | exp lt exp {;}
-           | exp gt exp {;}
-           | exp lte exp {;}
-           | exp gte exp {;}
-           | exp oror exp {;}
-           | exp andand exp {;}
-           | exp eqeq exp {;}
-           | exp neq exp {;}
-           | lrb exp rrb {;} 
-           | term {;}
+           | exp minuss exp {$$ = new ASTexp("nonterminal",$1,$3,"minuss",NULL) ;}
+           | exp mul exp {$$ = new ASTexp("nonterminal",$1,$3,"mul",NULL);}
+           | exp divi exp {$$ = new ASTexp("nonterminal",$1,$3,"divi",NULL);}
+           | exp lt exp {$$ = new ASTexp("nonterminal",$1,$3,"lt",NULL);}
+           | exp gt exp {$$ = new ASTexp("nonterminal",$1,$3,"gt",NULL);}
+           | exp lte exp {$$ = new ASTexp("nonterminal",$1,$3,"lte",NULL);}
+           | exp gte exp {$$ = new ASTexp("nonterminal",$1,$3,"gte",NULL);}
+           | exp oror exp {$$ = new ASTexp("nonterminal",$1,$3,"oror",NULL);}
+           | exp andand exp {$$ = new ASTexp("nonterminal",$1,$3,"andand",NULL);}
+           | exp eqeq exp {$$ = new ASTexp("nonterminal",$1,$3,"eqeq",NULL);}
+           | exp neq exp { $$ = new ASTexp("nonterminal",$1,$3,"neq",NULL);}
+           | lrb exp rrb { $$ = $2;} 
+           | term { $$ = new ASTexp("term",NULL,NULL,"NULL",$1) ;}
            ;
 
 term    : number { $$ = new ASTterm($1,NULL,"number")  ;}

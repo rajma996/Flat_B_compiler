@@ -36,3 +36,12 @@ ASTterm::ASTterm(int number,class ASTvariables * variable, string terminal_type)
   this->terminal_type = terminal_type;
 }
 
+ASTexp::ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term)
+{
+  this->exptype = exptype ;
+  this->lexp = lexp;
+  this->rexp = rexp;
+  this->operator_type = operator_type;
+  this->term = term;
+}
+

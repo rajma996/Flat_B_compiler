@@ -9,6 +9,7 @@ union node
   class ASTfinal_printexp* final_printexp;
   class ASTprintexp* printexp;
   class ASTterm* term;
+  class ASTexp* exp ;
 };
 
 typedef union node YYSTYPE;
@@ -56,4 +57,16 @@ class ASTterm: public ASTnode
   string terminal_type; // type number or variable;
  public :
   ASTterm(int number,class ASTvariables* variable, string terminal_type);
+};
+
+class ASTexp :public ASTnode
+{
+ private:
+  string exptype ; // terminal or nonterminal
+  class ASTexp * lexp ;
+  class ASTexp* rexp;
+  string operator_type ;
+  class ASTterm* term;
+ public:
+  ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term );
 };
