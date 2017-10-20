@@ -5,11 +5,28 @@ using namespace std;
 
 extern int errors;
 
-
-ASTprogram::ASTprogram (class ASTdecl_statements* ASTdecl_statements, class ASTcode_statements* ASTcode_statements)
+ASTprogram::ASTprogram (class ASTdecl_statements* decl_statements, class ASTcode_statements* code_statements)
 {
   this->decl_statements = decl_statements;
   this->code_statements = code_statements;
+}
+
+void ASTprogram::traverse()
+{
+  cout<<"Stasrting program execution"<<endl;
+  this->decl_statements->traverse();
+  this->code_statements->traverse();
+}
+
+ASTdecl_statements::ASTdecl_statements(class ASTdecl_statement*  decl_statement)
+{
+  this->decl_statement = decl_statement;
+  this->decl_statement->traverse();
+}
+
+void ASTdecl_statements::traverse()
+{
+  this->decl_statement->traverse();
 }
 
 ASTdecl_statement::ASTdecl_statement(class ASTliterals* literals)
@@ -17,15 +34,31 @@ ASTdecl_statement::ASTdecl_statement(class ASTliterals* literals)
   this->literals.push_back(literals);
 }
 
-ASTdecl_statements::ASTdecl_statements(class ASTdecl_statement*  decl_statement )
-{
-  this->decl_statement = decl_statement;
-}
-
-
 void ASTdecl_statement::push_back(class ASTliterals* literals)
 {
   this->literals.push_back(literals);
+}
+
+void ASTdecl_statement::traverse()
+{
+  cout<<"entering decl block"<<endl;
+  for (int i=0;i<this->literals.size();i++)
+    {
+      cout<<"literal "<<i<<endl;
+      literals[i]->traverse();
+    }
+}
+
+ASTcode_statements::ASTcode_statements( class ASTcode_line* code_line)
+{
+  cout<<"enterint code statements"<<endl;
+  this->code_line=code_line;
+}
+
+void ASTcode_statements::traverse()
+{
+  cout<<"entering code statements"<<endl;
+  return ;
 }
 
 ASTliterals::ASTliterals(class ASTvariables* variables)
@@ -33,16 +66,48 @@ ASTliterals::ASTliterals(class ASTvariables* variables)
   this->variables.push_back(variables);
 }
 
+void ASTliterals::traverse()
+{
+  for(int i=0;i<this->variables.size();i++)
+    cout<<variables[i]->name<<endl;;
+}
+
 void ASTliterals::push_back(class ASTvariables* variables)
 {
   this->variables.push_back(variables);
 }
 
-ASTcode_statements::ASTcode_statements( class ASTcode_line* code_line)
+void ASTcode_line::push_back(class ASTcode_line* code_line)
 {
-  this->code_line=code_line;
+  this->code_line.push_back(code_line);
 }
 
+ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line)
+{
+  this->exp = exp;
+  this->code_line = code_line;
+}
+
+ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line)
+{
+  this->identifier = identifier;
+  this->lowerrange = lowerrange;
+  this->higherrange = higherrange;
+  this->code_line = code_line;
+}
+
+
+ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
+{
+  this->label = label;
+  this->exp = exp;
+}
+
+ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp)
+{
+  this->variable = variable;
+  this->exp = exp;
+}
 
 ASTvariables::ASTvariables(string var_type,string size_type, string name,int int_size,string ide_size )
 {
@@ -51,28 +116,6 @@ ASTvariables::ASTvariables(string var_type,string size_type, string name,int int
   this->name=name;
   this->int_size=int_size;
   this->ide_size = ide_size;
-}
-
-ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
-{
-  this->str = str;
-  this->var = var;
-}
-
-ASTprintexp::ASTprintexp(class ASTfinal_printexp * final_printexp)
-{
-  this->printexp_vec.push_back(final_printexp);
-}
-void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
-{
-  this->printexp_vec.push_back(final_printexp);
-}
-
-ASTterm::ASTterm(int number,class ASTvariables * variable, string terminal_type)
-{
-  this->number = number;
-  this->variable = variable;
-  this->terminal_type = terminal_type;
 }
 
 ASTexp::ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term)
@@ -84,35 +127,28 @@ ASTexp::ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string ope
   this->term = term;
 }
 
-ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp)
+ASTterm::ASTterm(int number,class ASTvariables * variable, string terminal_type)
 {
+  this->number = number;
   this->variable = variable;
-  this->exp = exp;
+  this->terminal_type = terminal_type;
 }
 
-ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
+ASTprintexp::ASTprintexp(class ASTfinal_printexp * final_printexp)
 {
-  this->label = label;
-  this->exp = exp;
+  this->printexp_vec.push_back(final_printexp);
 }
 
-void ASTcode_line::push_back(class ASTcode_line* code_line)
+void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
 {
-  this->code_line.push_back(code_line);
+  this->printexp_vec.push_back(final_printexp);
 }
 
-ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line)
-{
-  this->identifier = identifier;
-  this->lowerrange = lowerrange;
-  this->higherrange = higherrange;
-  this->code_line = code_line;
-}
 
-ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line)
+ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
 {
-  this->exp = exp;
-  this->code_line = code_line;
+  this->str = str;
+  this->var = var;
 }
 
 

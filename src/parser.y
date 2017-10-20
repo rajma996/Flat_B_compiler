@@ -6,9 +6,10 @@ using namespace std;
 extern "C" int yylex();
 extern union node yylval;
 
- int errors;
- void yyerror(char *);
-
+int errors;
+void yyerror(char *);
+ 
+class ASTprogram *start = NULL;
  
 %}
 
@@ -81,23 +82,34 @@ extern union node yylval;
 
 /* descriptions of expected inputs corresponding actions (in C) */
 
+program : declblock decl_statements codeblock code_statements
+{
+  $$ = new ASTprogram($2,$4);
+  start = $$;
+};
 
-program : declblock decl_statements codeblock code_statements {$$ = new ASTprogram ($2,$4); printf("making program instance"); };
 
-decl_statements : lcb rcb  {$$= new ASTdecl_statements (NULL);}
-                 | lcb decl_statement rcb { $$ = new ASTdecl_statements($2)  ;}
+
+decl_statements : lcb decl_statement rcb
+                { $$ = new ASTdecl_statements($2);  }
+
 
 /* declaration statements */
-decl_statement : int_datatype literals ';' {$$ = new ASTdecl_statement($2);}
-           | decl_statement int_datatype literals ';' {$$->push_back($3);}
-                 ;
+decl_statement : int_datatype literals ';'
+{
+  $$ = new ASTdecl_statement($2);
+}
+| decl_statement int_datatype literals ';'
+{
+  $$->push_back($3);
+};
 
 code_statements : lcb rcb  {$$=new ASTcode_statements(NULL);}
                 | lcb code_line rcb {$$ = new ASTcode_statements($2);}
 
 /* comma separated values */
-literals : literals comma variables {$$->push_back($3);}
-          | variables {$$ = new ASTliterals($1);}
+literals : literals comma variables {$$->push_back($3); }
+| variables {$$ = new ASTliterals($1); }
            ;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
@@ -118,7 +130,7 @@ code_line :      goto_statement ';'                   {$$=$1;}
                  ;
 
 
-if_statement : if_token lrb exp rrb lcb code_line rcb {$$ = new ASTif_statement($3,$6);  printf("if statement"); } ;
+if_statement : if_token lrb exp rrb lcb code_line rcb {$$ = new ASTif_statement($3,$6); } ;
 
 
 for_statement : for_token identifier eq number comma number lcb code_line rcb {$$ = new ASTfor_statement($2,$4,$6,$8) ;} ;
@@ -129,10 +141,8 @@ goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$
 assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
            ;
 
-
-
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
-            | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");}; 
+| identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");   }; 
             | identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
 
 
@@ -159,7 +169,7 @@ term    : number { $$ = new ASTterm($1,NULL,"number")  ;}
 
 /* print expression after print key word,comma separated identifiers or strings  */
 
-printexp :      printexp comma final_printexp { $$->push_back($3);  }
+printexp :      printexp comma final_printexp { $$->push_back($3); }
                 | final_printexp { $$ = new ASTprintexp($1); }
                 ;
 
@@ -178,7 +188,11 @@ int main (void)
 {
 /* init symbol table */
   errors = 0;
-  return yyparse ();
+  yyparse ();
+
+  start->traverse();
+
+  return 0;
   
 }
 

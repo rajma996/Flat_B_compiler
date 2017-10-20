@@ -31,54 +31,128 @@ class ASTnode
   
 };
 
+class visitor
+{
+ public:
+  virtual void visit(class ASTprogram* );
+  virtual void visit(class ASTdecl_statements* );
+  virtual void visit(class ASTdecl_statement*  );
+  virtual void visit(class ASTcode_statements* );
+  virtual void visit(class ASTliterals* );
+  virtual void visit(class ASTcode_line* );
+  virtual void visit(class ASTif_statement* );
+  virtual void visit(class ASTfor_statement* );
+  virtual void visit(class ASTgoto_statement* );
+  virtual void visit(class ASTassignment* );
+  virtual void visit(class ASTvariables* );
+  virtual void visit(class ASTexp* );
+  virtual void visit(class ASTterm* );
+  virtual void visit(class ASTprintexp* );
+  virtual void visit(class ASTfinal_printexp* );
+  virtual void visit(class ASTreadexp* );
+};
+
 class ASTprogram:public ASTnode
 {
- private:
+ public:
   class ASTdecl_statements* decl_statements;
   class ASTcode_statements* code_statements;
  public:
   ASTprogram(class ASTdecl_statements* ASTdecl_statements, class ASTcode_statements* ASTcode_statements);
-};
-
-
-class ASTcode_statements:public ASTnode
-{
- private:
-  class ASTcode_line* code_line;
- public:
-  ASTcode_statements(class ASTcode_line* code_line);
-};
-
-class ASTdecl_statement:public ASTnode
-{
- private:
-  vector<class ASTliterals*> literals;
- public:
-  ASTdecl_statement(class ASTliterals* literals);
-  void push_back(class ASTliterals* literals);
+  void traverse();
+  void accept(visitor *);
 };
 
 class ASTdecl_statements:public ASTnode
 {
- private:
+public:
   class ASTdecl_statement* decl_statement;
  public:
   ASTdecl_statements(class ASTdecl_statement* decl_statement);
+  void traverse();
+  void accept(visitor*);
 };
 
+class ASTdecl_statement:public ASTnode
+{
+public:
+  vector<class ASTliterals*> literals;
+ public:
+  ASTdecl_statement(class ASTliterals* literals);
+  void push_back(class ASTliterals* literals);
+  void traverse();
+  void accept(visitor*);
+};
+
+class ASTcode_statements:public ASTnode
+{
+public:
+  class ASTcode_line* code_line;
+ public:
+  ASTcode_statements(class ASTcode_line* code_line);
+  void traverse();
+};
 
 class ASTliterals:public ASTnode
 {
- private:
+ public:
   vector<class ASTvariables*> variables;
  public:
   ASTliterals(class ASTvariables* variables);
   void push_back(class ASTvariables* variables);
+  void traverse();
+};
+
+class ASTcode_line : public ASTnode
+{
+ public :
+  vector<class ASTcode_line*> code_line;
+ public :
+  void push_back(class ASTcode_line* code_line);
+};
+
+class ASTif_statement : public ASTcode_line
+{
+ public :
+  class ASTexp* exp;
+  class ASTcode_line* code_line;
+ public:
+  ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line);
+};
+
+class ASTfor_statement : public ASTcode_line
+{
+ public :
+  string identifier;
+  int lowerrange;
+  int higherrange;
+  class ASTcode_line* code_line;
+ public:
+  ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line);
+};
+
+
+class ASTgoto_statement : public ASTcode_line
+{
+ public :
+  string label;
+  class ASTexp* exp;
+ public :
+  ASTgoto_statement(string label, class ASTexp* exp);
+};
+
+class ASTassignment :public ASTcode_line
+{
+ public :
+  class ASTvariables* variable;
+  class ASTexp* exp ;
+ public:
+  ASTassignment(class ASTvariables* variable, class ASTexp* exp);
 };
 
 class ASTvariables : public ASTnode
 {
- private :
+ public :
   string var_type ; // array or normal;
   string size_type ; // size by identifier or integer
   string name ; // name of variable
@@ -88,29 +162,10 @@ class ASTvariables : public ASTnode
   ASTvariables(string var_type,string size_type, string name,int int_size,string ide_size ) ;
 };
 
-class ASTfinal_printexp: public ASTnode
-{
- private:
-  string str;
-  class ASTvariables* var;
- public :
-  ASTfinal_printexp(string str,class ASTvariables* var);
-};
-
-
-class ASTterm: public ASTnode
-{
- private:
-  int number;
-  class ASTvariables* variable;
-  string terminal_type; // type number or variable;
- public :
-  ASTterm(int number,class ASTvariables* variable, string terminal_type);
-};
 
 class ASTexp :public ASTnode
 {
- private:
+ public:
   string exptype ; // terminal or nonterminal
   class ASTexp * lexp ;
   class ASTexp* rexp;
@@ -120,65 +175,39 @@ class ASTexp :public ASTnode
   ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term );
 };
 
-
-class ASTcode_line : public ASTnode
+class ASTterm: public ASTnode
 {
- private :
-  vector<class ASTcode_line*> code_line;
- public :
-  void push_back(class ASTcode_line* code_line);
-};
-
-class ASTfor_statement : public ASTcode_line
-{
- private :
-  string identifier;
-  int lowerrange;
-  int higherrange;
-  class ASTcode_line* code_line;
  public:
-  ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line);
-};
-
-class ASTif_statement : public ASTcode_line
-{
- private :
-  class ASTexp* exp;
-  class ASTcode_line* code_line;
- public:
-  ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line);
-};
-
-class ASTgoto_statement : public ASTcode_line
-{
- private :
-  string label;
-  class ASTexp* exp;
- public :
-  ASTgoto_statement(string label, class ASTexp* exp);
-};
-
-class ASTassignment :public ASTcode_line
-{
- private :
+  int number;
   class ASTvariables* variable;
-  class ASTexp* exp ;
- public:
-  ASTassignment(class ASTvariables* variable, class ASTexp* exp);
+  string terminal_type; // type number or variable;
+ public :
+  ASTterm(int number,class ASTvariables* variable, string terminal_type);
 };
 
 class ASTprintexp: public ASTcode_line
 {
- private:
+ public:
   vector<class ASTfinal_printexp*> printexp_vec;
  public :
   ASTprintexp(class ASTfinal_printexp * final_printexp);
   void push_back(class ASTfinal_printexp * final_printexp);
 };
 
+
+class ASTfinal_printexp: public ASTnode
+{
+ public:
+  string str;
+  class ASTvariables* var;
+ public :
+  ASTfinal_printexp(string str,class ASTvariables* var);
+};
+
+
 class ASTreadexp: public ASTcode_line
 {
- private:
+ public:
   vector<class ASTvariables*> variables;
  public:
   ASTreadexp(class ASTvariables* variables);
