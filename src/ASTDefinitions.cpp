@@ -77,6 +77,11 @@ void ASTcode_statements::traverse()
   return ;
 }
 
+void ASTcode_statements::accept(visitor* v)
+{
+  v->visit(this);
+}
+
 ASTliterals::ASTliterals(class ASTvariables* variables)
 {
   this->variables.push_back(variables);
@@ -101,6 +106,11 @@ void ASTliterals::accept(class visitor* v)
 void ASTcode_line::push_back(class ASTcode_line* code_line)
 {
   this->code_line.push_back(code_line);
+}
+
+void ASTcode_line::accept(visitor* v)
+{
+  v->visit(this);
 }
 
 ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line)

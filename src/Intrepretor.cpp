@@ -12,6 +12,7 @@ public :
   {
     cout<<"visiting main node everything is below you"<<endl;
     program->decl_statements->accept(this);
+    program->code_statements->accept(this);
   }
   void visit(class ASTdecl_statements* decl_statements)
   {
@@ -29,12 +30,21 @@ public :
     for (int i=0;i<decl_statement->literals.size();i++)
       decl_statement->literals[i]->accept(this);
   }
+  // initializint all variables to zero.
   void visit(class ASTliterals* literals)
   {
     cout<<"visiting the literans"<<endl;
     for (int i=0;i<literals->variables.size();i++)
       {
-        cout<<literals->variables[i]->name<<endl;
+        string temp = literals->variables[i]->name;
+        string newtemp = "";
+        for (int j=0;j<temp.size();j++)
+          {
+            if ( (temp[j]>='a' && temp[j]<='z') || (temp[j]>='A' && temp[j]<='Z' ) )
+            newtemp += temp[j];
+          }
+        literals->variables[i]->name = newtemp;
+        
         class ASTvariables* temp_variable = literals->variables[i];
         if (temp_variable->var_type=="normal")
           {
@@ -59,19 +69,20 @@ public :
           }
       }
   }
+
+  void visit(class ASTcode_statements* code_statements)
+  {
+    if (code_statements->code_line==NULL)
+      {
+        cout<<"no code statement"<<endl;
+        return;
+      }
+    code_statements->code_line->accept(this);
+  }
+
+  void visit(class ASTcode_line* code_line)
+  {
+    return;
+  }
   
-  // void visit(class ASTvariables* variables)
-  // {
-  //   if (var_type=="normal")
-  //     {
-  //       if (symbol_table.find(make_pair(variables->name,0))!=symbol_table.end())
-  //         symbol_table[make_pair(variables->name,0)]=0;
-  //       else
-  //         {cout<<"error : variable previously definded "<<endl; return;}
-  //     }
-  //   else if (var_type=="array")
-  //     {
-  //       if (size_type)
-  //     }
-  // }
 };
