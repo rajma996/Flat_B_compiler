@@ -3,6 +3,8 @@
 #include"Intrepretor.cpp"
   
 using namespace std;
+
+extern "C" FILE* yyin;
 extern "C" int yylex();
 extern union node yylval;
 
@@ -90,7 +92,6 @@ program : declblock decl_statements codeblock code_statements
 };
 
 
-
 decl_statements : lcb decl_statement rcb
                 { $$ = new ASTdecl_statements($2);  }
 
@@ -104,6 +105,7 @@ decl_statement : int_datatype literals ';'
 {
   $$->push_back($3);
 };
+
 
 code_statements : lcb rcb  {$$=new ASTcode_statements(NULL);}
                 | lcb code_lines rcb {$$ = new ASTcode_statements($2);}
@@ -181,10 +183,13 @@ readexp :      readexp comma variables { $$->push_back($3); cout<<"print vas"<<$
 
 %%       /* C code */
 
-int main (void)
+int main (int argc,char* argv[])
 {
 /* init symbol table */
   errors = 0;
+
+  yyin = fopen(argv[1],"r");
+    
   yyparse ();
 
   Interpretor* Interpr = new Interpretor();
