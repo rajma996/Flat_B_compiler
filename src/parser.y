@@ -65,6 +65,9 @@ extern union node yylval;
 %type <exp> exp
 %type <assignment> assignment
 %type <goto_statement> goto_statement
+%type <for_statement> for_statement
+%type <code_line> code_line
+%type <readexp> readexp
 
 %start program;
 
@@ -96,15 +99,15 @@ final_identifier : identifier {printf("setting up var %s\n",$1);}
                   | identifier  lsb  number rsb {printf("setting up arrar %d\n",$3);}                  ;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
-code_line :      goto_statement ';'                   {;}
-                 | for_statement                      {;}
+code_line :      goto_statement ';'                   {$$=$1;}
+                 | for_statement                      {$$=$1;}
                  | if_statement                       {;}
-                 | assignment ';'                     {;}
-                 | print printexp ';'		      {;}
-                 | read_token variables ';'           {;}
+                 | assignment ';'                     {$$=$1;}
+                 | print printexp ';'		      {$$=$2;}
+                 | read_token readexp ';'             {$$=$2;}
                  | label colon                        {;}
                  | code_line print printexp ';'	      {;}
-                 | code_line read_token variables ';' {;}
+                 | code_line read_token readexp ';'   {;}
                  | code_line assignment ';'           {;}
                  | code_line if_statement             {;}
                  | code_line for_statement            {;}
@@ -112,9 +115,10 @@ code_line :      goto_statement ';'                   {;}
                  | code_line label colon              {;}
                  ;
 
+
 if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
 
-for_statement : for_token identifier eq number comma number lcb code_line rcb {;} ;
+for_statement : for_token identifier eq number comma number lcb code_line rcb {$$ = new ASTfor_statement($2,$4,$6) ;} ;
 
 goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
             | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
@@ -125,6 +129,7 @@ assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
             | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");}; 
             | identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
+
 
 
 exp     :  exp pluss exp {;}
@@ -145,7 +150,7 @@ exp     :  exp pluss exp {;}
 
 term    : number { $$ = new ASTterm($1,NULL,"number")  ;}
          | variables { $$ = new ASTterm(-1,$1,"variable") ;}
-        ;
+;
 
 /* print expression after print key word,comma separated identifiers or strings  */
 
@@ -153,10 +158,14 @@ printexp :      printexp comma final_printexp { $$->push_back($3);  }
                 | final_printexp { $$ = new ASTprintexp($1); }
                 ;
 
-/*string or identifier as component of print statement */
 final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); printf("print string %s\n",$1);} 
 | variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
+
+readexp :      readexp comma variables { $$->push_back($3); }
+                | variables { $$ = new ASTreadexp($1); }
+                ;
+
 
 %%       /* C code */
 

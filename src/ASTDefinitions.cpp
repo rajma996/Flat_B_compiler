@@ -57,3 +57,24 @@ ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
   this->exp = exp;
 }
 
+void ASTcode_line::push_back(class ASTcode_line* code_line)
+{
+  this->code_line.push_back(code_line);
+}
+
+ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange)
+{
+  this->identifier = identifier;
+  this->lowerrange = lowerrange;
+  this->higherrange = higherrange;
+}
+
+ASTreadexp::ASTreadexp(class ASTvariables* variables)
+{
+  this->variables.push_back(variables);
+}
+
+void ASTreadexp::push_back(class ASTvariables* variables)
+{
+  this->variables.push_back(variables);
+}
