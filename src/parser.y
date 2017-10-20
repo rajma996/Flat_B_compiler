@@ -68,6 +68,7 @@ extern union node yylval;
 %type <for_statement> for_statement
 %type <code_line> code_line
 %type <readexp> readexp
+%type <if_statement> if_statement
 
 %start program;
 
@@ -101,22 +102,23 @@ final_identifier : identifier {printf("setting up var %s\n",$1);}
 /* all possible code lines : print, read, if, for, assignment,goto */
 code_line :      goto_statement ';'                   {$$=$1;}
                  | for_statement                      {$$=$1;}
-                 | if_statement                       {;}
+                 | if_statement                       {$$=$1;}
                  | assignment ';'                     {$$=$1;}
                  | print printexp ';'		      {$$=$2;}
                  | read_token readexp ';'             {$$=$2;}
                  | label colon                        {;}
-                 | code_line print printexp ';'	      {;}
-                 | code_line read_token readexp ';'   {;}
-                 | code_line assignment ';'           {;}
-                 | code_line if_statement             {;}
-                 | code_line for_statement            {;}
-                 | code_line goto_statement ';'       {;}
+                 | code_line print printexp ';'	      {$$->push_back($3);}
+                 | code_line read_token readexp ';'   {$$->push_back($3);}
+                 | code_line assignment ';'           {$$->push_back($2);}
+                 | code_line if_statement             {$$->push_back($2);}
+                 | code_line for_statement            {$$->push_back($2);}
+                 | code_line goto_statement ';'       {$$->push_back($2);}
                  | code_line label colon              {;}
                  ;
 
 
-if_statement : if_token lrb exp rrb lcb code_line rcb {printf("if statement");} ;
+if_statement : if_token lrb exp rrb lcb code_line rcb {$$ = new ASTif_statement($3);  printf("if statement");}  ;
+
 
 for_statement : for_token identifier eq number comma number lcb code_line rcb {$$ = new ASTfor_statement($2,$4,$6) ;} ;
 

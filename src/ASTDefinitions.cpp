@@ -69,6 +69,12 @@ ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherra
   this->higherrange = higherrange;
 }
 
+ASTif_statement::ASTif_statement(class ASTexp* exp)
+{
+  this->exp = exp;
+}
+
+
 ASTreadexp::ASTreadexp(class ASTvariables* variables)
 {
   this->variables.push_back(variables);

@@ -14,6 +14,7 @@ union node
   class ASTassignment* assignment ;
   class ASTgoto_statement* goto_statement;
   class ASTfor_statement* for_statement ;
+  class ASTif_statement* if_statement ;
   class ASTcode_line* code_line;
 };
 
@@ -73,7 +74,7 @@ class ASTcode_line : public ASTnode
 {
  private :
   vector<class ASTcode_line*> code_line;
- private :
+ public :
   void push_back(class ASTcode_line* code_line);
 };
 
@@ -85,6 +86,14 @@ class ASTfor_statement : public ASTcode_line
   int higherrange;
  public:
   ASTfor_statement(string identifier,int lowerrange,int higherrange);
+};
+
+class ASTif_statement : public ASTcode_line
+{
+ private :
+  class ASTexp* exp;
+ public:
+  ASTif_statement(class ASTexp* exp);
 };
 
 class ASTgoto_statement : public ASTcode_line
@@ -122,3 +131,5 @@ class ASTreadexp: public ASTcode_line
   ASTreadexp(class ASTvariables* variables);
   void push_back(class ASTvariables* variables);
 };
+
+
