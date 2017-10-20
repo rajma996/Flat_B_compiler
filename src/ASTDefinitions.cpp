@@ -138,7 +138,6 @@ ASTvariables::ASTvariables(string var_type,string size_type, string name,int int
   this->int_size=int_size;
   this->ide_size = ide_size;
 }
-
 ASTexp::ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term)
 {
   this->exptype = exptype ;

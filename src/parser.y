@@ -147,6 +147,7 @@ variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
 
 
 
+
 exp     :  exp pluss exp {;}
            | exp minuss exp {$$ = new ASTexp("nonterminal",$1,$3,"minuss",NULL) ;}
            | exp mul exp {$$ = new ASTexp("nonterminal",$1,$3,"mul",NULL);}

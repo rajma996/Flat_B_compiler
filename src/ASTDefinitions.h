@@ -37,7 +37,7 @@ class visitor
   virtual void visit(class ASTprogram* )=0;;
   virtual void visit(class ASTdecl_statements* )=0;
   virtual void visit(class ASTdecl_statement*  ) =0;;
-  virtual void visit(class ASTliterals*  ) =0;;
+  virtual void visit(class ASTliterals*  ) =0;
 };
 
 class ASTprogram:public ASTnode
