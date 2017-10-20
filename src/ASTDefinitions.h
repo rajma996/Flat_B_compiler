@@ -84,16 +84,18 @@ class ASTfor_statement : public ASTcode_line
   string identifier;
   int lowerrange;
   int higherrange;
+  class ASTcode_line* code_line;
  public:
-  ASTfor_statement(string identifier,int lowerrange,int higherrange);
+  ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line);
 };
 
 class ASTif_statement : public ASTcode_line
 {
  private :
   class ASTexp* exp;
+  class ASTcode_line* code_line;
  public:
-  ASTif_statement(class ASTexp* exp);
+  ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line);
 };
 
 class ASTgoto_statement : public ASTcode_line

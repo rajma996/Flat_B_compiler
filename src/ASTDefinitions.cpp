@@ -62,16 +62,18 @@ void ASTcode_line::push_back(class ASTcode_line* code_line)
   this->code_line.push_back(code_line);
 }
 
-ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange)
+ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line)
 {
   this->identifier = identifier;
   this->lowerrange = lowerrange;
   this->higherrange = higherrange;
+  this->code_line = code_line;
 }
 
-ASTif_statement::ASTif_statement(class ASTexp* exp)
+ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line)
 {
   this->exp = exp;
+  this->code_line = code_line;
 }
 
 

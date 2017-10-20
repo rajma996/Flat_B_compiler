@@ -1482,13 +1482,13 @@ yyreduce:
 
   case 27:
 #line 120 "parser.y" /* yacc.c:1646  */
-    {(yyval.if_statement) = new ASTif_statement((yyvsp[-4].exp));  printf("if statement");}
+    {(yyval.if_statement) = new ASTif_statement((yyvsp[-4].exp),(yyvsp[-1].code_line));  printf("if statement"); }
 #line 1487 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
 #line 123 "parser.y" /* yacc.c:1646  */
-    {(yyval.for_statement) = new ASTfor_statement((yyvsp[-7].id),(yyvsp[-5].num),(yyvsp[-3].num)) ;}
+    {(yyval.for_statement) = new ASTfor_statement((yyvsp[-7].id),(yyvsp[-5].num),(yyvsp[-3].num),(yyvsp[-1].code_line)) ;}
 #line 1493 "parser.tab.c" /* yacc.c:1646  */
     break;
 

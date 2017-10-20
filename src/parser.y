@@ -117,10 +117,10 @@ code_line :      goto_statement ';'                   {$$=$1;}
                  ;
 
 
-if_statement : if_token lrb exp rrb lcb code_line rcb {$$ = new ASTif_statement($3);  printf("if statement");}  ;
+if_statement : if_token lrb exp rrb lcb code_line rcb {$$ = new ASTif_statement($3,$6);  printf("if statement"); } ;
 
 
-for_statement : for_token identifier eq number comma number lcb code_line rcb {$$ = new ASTfor_statement($2,$4,$6) ;} ;
+for_statement : for_token identifier eq number comma number lcb code_line rcb {$$ = new ASTfor_statement($2,$4,$6,$8) ;} ;
 
 goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
             | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
