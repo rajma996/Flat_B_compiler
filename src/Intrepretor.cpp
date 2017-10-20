@@ -103,9 +103,47 @@ public :
     return;
   }
 
+  int evaluateexpr(class ASTexp* expr)
+  {
+    cout<<expr->operator_type<<endl;
+    if (expr->exptype == "terminal")
+      {
+        if (expr->term->terminal_type=="number" )
+            return expr->term->number;
+        else if (expr->term->terminal_type=="variable")
+            return this->getmapiterator(expr->term->variable)->second;
+      }
+
+    if (expr->operator_type=="plus")
+        return evaluateexpr(expr->lexp)+evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="mul")
+        return evaluateexpr(expr->lexp)*evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="divi")
+        return evaluateexpr(expr->lexp)/evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="lt")
+        return evaluateexpr(expr->lexp)<evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="gt")
+        return evaluateexpr(expr->lexp)>evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="lte")
+        return evaluateexpr(expr->lexp)<=evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="gte")
+        return evaluateexpr(expr->lexp)>=evaluateexpr(expr->rexp);
+    else if  (expr->operator_type=="oror")
+        return (evaluateexpr(expr->lexp)||evaluateexpr(expr->rexp));
+    else if  (expr->operator_type=="andand")
+      return (evaluateexpr(expr->lexp)&&evaluateexpr(expr->rexp));
+    else if  (expr->operator_type=="eqeq")
+      return ((evaluateexpr(expr->lexp)==evaluateexpr(expr->rexp)));
+    else if  (expr->operator_type=="neq")
+        return (evaluateexpr(expr->lexp)!=evaluateexpr(expr->rexp));
+
+  }
+
   void visit(class ASTassignment* assignment)
   {
-        
+    int expval = evaluateexpr(assignment->exp);
+    this->getmapiterator(assignment->variable)->second = expval;
+    return;
   }
 
   void visit(class ASTprintexp* printexp)
@@ -113,23 +151,6 @@ public :
     for (int i=0;i<printexp->printexp_vec.size();i++)
       {
         printexp->printexp_vec[i]->accept(this);
-      }
-    return;
-  }
-
-  void visit(class ASTreadexp* readexp)
-  {
-    cout<<"inside readexp visit"<<endl;
-    for (int i=0;i<readexp->variables.size();i++)
-      {
-        class ASTvariables* var = readexp->variables[i];
-        this->validatevar(var);
-        if (var->var_type=="array")
-          {
-            cin>>symbol_table[make_pair(var->name,var->int_size)];
-          }
-        else if (var->var_type=="normal")
-          cin>>symbol_table[make_pair(var->name,-1)];
       }
     return;
   }
@@ -161,8 +182,31 @@ public :
             exit(0);
           }
       }
-
   }
+
+
+  map<pair<string,int>,int>::iterator getmapiterator(class ASTvariables* variable)
+  {
+    this->validatevar(variable);
+    if (variable->var_type=="normal")
+        return symbol_table.find(make_pair(variable->name,-1));
+    return symbol_table.find(make_pair(variable->name,variable->int_size));
+  }
+
+
+  void visit(class ASTreadexp* readexp)
+  {
+    cout<<"inside readexp visit"<<endl;
+    for (int i=0;i<readexp->variables.size();i++)
+      {
+        class ASTvariables* var = readexp->variables[i];
+        this->validatevar(var);
+        map<pair<string,int>,int>::iterator it = this->getmapiterator(var) ;
+        cin>>it->second;
+      }
+    return;
+  }
+
 
   void printvar(class ASTvariables* var)
   {

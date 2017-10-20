@@ -145,8 +145,9 @@ variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
             | identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
 
 
-exp     :  exp pluss exp {;}
-           | exp minuss exp {$$ = new ASTexp("nonterminal",$1,$3,"minuss",NULL) ;}
+
+exp     :  exp pluss exp {$$ = new ASTexp("nonterminal",$1,$3,"plus",NULL) ;}
+           | exp minuss exp {$$ = new ASTexp("nonterminal",$1,$3,"minus",NULL) ;}
            | exp mul exp {$$ = new ASTexp("nonterminal",$1,$3,"mul",NULL);}
            | exp divi exp {$$ = new ASTexp("nonterminal",$1,$3,"divi",NULL);}
            | exp lt exp {$$ = new ASTexp("nonterminal",$1,$3,"lt",NULL);}
@@ -158,10 +159,13 @@ exp     :  exp pluss exp {;}
            | exp eqeq exp {$$ = new ASTexp("nonterminal",$1,$3,"eqeq",NULL);}
            | exp neq exp { $$ = new ASTexp("nonterminal",$1,$3,"neq",NULL);}
            | lrb exp rrb { $$ = $2;} 
-           | term { $$ = new ASTexp("term",NULL,NULL,"NULL",$1) ;}
+| term { $$ = new ASTexp("terminal",NULL,NULL,"NULL",$1); cout<<"term "<<$1<<endl; }
            ;
 
-term    : number { $$ = new ASTterm($1,NULL,"number")  ;}
+
+
+
+term    : number { $$ = new ASTterm($1,NULL,"number");}
          | variables { $$ = new ASTterm(-1,$1,"variable") ;}
 ;
 
