@@ -156,9 +156,18 @@ void ASTassignment::accept(visitor* v)
 
 ASTvariables::ASTvariables(string var_type,string size_type, string name,int int_size,string ide_size )
 {
+
+  string newname = "";
+
+  //for some unkown reasons extra stuff coming in varnames :( .
+  for (int i=0;i<name.size();i++)
+    {
+      if ((name[i]>='A' && name[i]<='Z') || (name[i]>='a'&&name[i]<='z'))
+        newname += name[i];
+    }
   this->var_type=var_type;
   this->size_type=size_type;
-  this->name=name;
+  this->name=newname;
   this->int_size=int_size;
   this->ide_size = ide_size;
 }
@@ -191,6 +200,7 @@ void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
 
 void ASTprintexp::accept(visitor* v)
 {
+  cout<<"back"<<endl;
   v->visit(this);
 }
 

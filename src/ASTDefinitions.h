@@ -40,6 +40,13 @@ class visitor
   virtual void visit(class ASTliterals*) =0;
   virtual void visit(class ASTcode_statements*) =0;
   virtual void visit(class ASTcode_line*) =0;
+  virtual void visit(class ASTif_statement*) = 0;
+  virtual void visit(class ASTfor_statement*) = 0;
+  virtual void visit(class ASTgoto_statement*)=0;
+  virtual void visit(class ASTassignment* )=0;
+  virtual void visit(class ASTprintexp* )=0;
+  virtual void visit(class ASTreadexp* )=0;
+  virtual void visit(class ASTfinal_printexp*)=0;
 };
 
 class ASTprogram:public ASTnode

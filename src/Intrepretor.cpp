@@ -7,6 +7,7 @@ class Interpretor: public visitor
 {
 private:
   map<pair<string,int>,int>  symbol_table;
+  map<string,int> array_size;
 public :
   void visit(class ASTprogram* program)
   {
@@ -30,41 +31,39 @@ public :
     for (int i=0;i<decl_statement->literals.size();i++)
       decl_statement->literals[i]->accept(this);
   }
+  
   // initializint all variables to zero.
   void visit(class ASTliterals* literals)
   {
     cout<<"visiting the literans"<<endl;
     for (int i=0;i<literals->variables.size();i++)
       {
-        string temp = literals->variables[i]->name;
-        string newtemp = "";
-        for (int j=0;j<temp.size();j++)
-          {
-            if ( (temp[j]>='a' && temp[j]<='z') || (temp[j]>='A' && temp[j]<='Z' ) )
-            newtemp += temp[j];
-          }
-        literals->variables[i]->name = newtemp;
-        
         class ASTvariables* temp_variable = literals->variables[i];
         if (temp_variable->var_type=="normal")
           {
-            if (symbol_table.find(make_pair(temp_variable->name,0))!=symbol_table.end())
+            if (symbol_table.find(make_pair(temp_variable->name,-1))!=symbol_table.end())
               {
                 cout<<"variable previousley defined";
                 return;
               }
             else
-              symbol_table[make_pair(temp_variable->name,0)]=0;
+              symbol_table[make_pair(temp_variable->name,-1)]=0;
           }
         else if (temp_variable->var_type=="array")
           {
             if (temp_variable->size_type=="integer")
               {
+                array_size[temp_variable->name] = temp_variable->int_size;
                 int si = temp_variable->int_size;
                 for (int i=0;i<si;i++)
                   {
                     symbol_table[make_pair(temp_variable->name,i)]=0;
                   }
+              }
+            else if (temp_variable->size_type=="identifier")
+              {
+                cout<<"identifier cannot be used while array declaration"<<endl;
+                exit(0);
               }
           }
       }
@@ -83,11 +82,15 @@ public :
 
   void visit(class ASTcode_line* code_line)
   {
-    ASTif_statement* v = dynamic_cast<ASTif_statement*>(code_line);
+    
+    ASTprintexp* v = dynamic_cast<ASTprintexp*>(code_line);
     if (v)
-       {
-         cout<<"if statementdetected";
-       }
+      {
+        cout<<"print satement de"<<endl;
+        cout<<v->printexp_vec.size()<<endl;
+        v->accept(this);
+      }
+    
     return;
   }
 
@@ -113,6 +116,10 @@ public :
 
   void visit(class ASTprintexp* printexp)
   {
+    for (int i=0;i<printexp->printexp_vec.size();i++)
+      {
+        printexp->printexp_vec[i]->accept(this);
+      }
     return;
   }
 
@@ -121,10 +128,48 @@ public :
     return;
   }
 
-  void visit(class ASTfinal_printexp* final_printexp)
+  void printvar(class ASTvariables* var)
   {
+    if (var->var_type=="array")
+      {
+        // checking existance
+        if (symbol_table.find(make_pair(var->name,0))==symbol_table.end())
+          {
+            cout<<"no variable foune"<<endl;
+            exit(0);
+          }
+        // check size
+        if (array_size[var->name]<var->int_size+1)
+          {
+            cout<<"array index out of bound"<<endl;
+            exit(0);
+          }
+        cout<<symbol_table[make_pair(var->name,var->int_size)];
+      }
+
+    else if (var->var_type=="normal")
+      {
+        // check existance
+        if (symbol_table.find(make_pair(var->name,-1))==symbol_table.end())
+          {
+            cout<<"variable not found"<<endl;
+            exit(0);
+          }
+        cout<<symbol_table[make_pair(var->name,-1)];
+      }
+    
     return;
   }
-
+  
+  void visit(class ASTfinal_printexp* final_printexp)
+  {
+    if (final_printexp->var==NULL)
+      {
+        cout<<final_printexp->str;
+      }
+    if (final_printexp->var!=NULL)
+      this->printvar(final_printexp->var);
+    return;
+  }
   
 };

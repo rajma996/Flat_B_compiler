@@ -76,6 +76,7 @@ class ASTprogram *start = NULL;
 %type <decl_statements> decl_statements
 %type <program> program
 
+
 %start program;
 %%
 
@@ -167,6 +168,7 @@ term    : number { $$ = new ASTterm($1,NULL,"number")  ;}
 ;
 
 /* print expression after print key word,comma separated identifiers or strings  */
+
 
 printexp :      printexp comma final_printexp { $$->push_back($3); }
                 | final_printexp { $$ = new ASTprintexp($1); }
