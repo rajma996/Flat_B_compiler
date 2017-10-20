@@ -1,6 +1,6 @@
 %{
 #include<bits/stdc++.h>
-#include"ASTDefinitions.h"
+#include"Intrepretor.cpp"
   
 using namespace std;
 extern "C" int yylex();
@@ -190,8 +190,10 @@ int main (void)
   errors = 0;
   yyparse ();
 
-  start->traverse();
+  Interpretor* Interpr = new Interpretor();
+  Interpr->visit(start);
 
+  
   return 0;
   
 }

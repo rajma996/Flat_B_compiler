@@ -18,6 +18,11 @@ void ASTprogram::traverse()
   this->code_statements->traverse();
 }
 
+void ASTprogram::accept(visitor* v)
+{
+  v->visit(this);
+}
+
 ASTdecl_statements::ASTdecl_statements(class ASTdecl_statement*  decl_statement)
 {
   this->decl_statement = decl_statement;
@@ -28,6 +33,12 @@ void ASTdecl_statements::traverse()
 {
   this->decl_statement->traverse();
 }
+
+void ASTdecl_statements::accept(visitor* v)
+{
+  v->visit(this);
+}
+
 
 ASTdecl_statement::ASTdecl_statement(class ASTliterals* literals)
 {
@@ -47,6 +58,11 @@ void ASTdecl_statement::traverse()
       cout<<"literal "<<i<<endl;
       literals[i]->traverse();
     }
+}
+
+void ASTdecl_statement::accept(visitor* v)
+{
+  v->visit(this);
 }
 
 ASTcode_statements::ASTcode_statements( class ASTcode_line* code_line)
@@ -75,6 +91,11 @@ void ASTliterals::traverse()
 void ASTliterals::push_back(class ASTvariables* variables)
 {
   this->variables.push_back(variables);
+}
+
+void ASTliterals::accept(class visitor* v)
+{
+  v->visit(this);
 }
 
 void ASTcode_line::push_back(class ASTcode_line* code_line)

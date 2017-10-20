@@ -34,22 +34,10 @@ class ASTnode
 class visitor
 {
  public:
-  virtual void visit(class ASTprogram* );
-  virtual void visit(class ASTdecl_statements* );
-  virtual void visit(class ASTdecl_statement*  );
-  virtual void visit(class ASTcode_statements* );
-  virtual void visit(class ASTliterals* );
-  virtual void visit(class ASTcode_line* );
-  virtual void visit(class ASTif_statement* );
-  virtual void visit(class ASTfor_statement* );
-  virtual void visit(class ASTgoto_statement* );
-  virtual void visit(class ASTassignment* );
-  virtual void visit(class ASTvariables* );
-  virtual void visit(class ASTexp* );
-  virtual void visit(class ASTterm* );
-  virtual void visit(class ASTprintexp* );
-  virtual void visit(class ASTfinal_printexp* );
-  virtual void visit(class ASTreadexp* );
+  virtual void visit(class ASTprogram* )=0;;
+  virtual void visit(class ASTdecl_statements* )=0;
+  virtual void visit(class ASTdecl_statement*  ) =0;;
+  virtual void visit(class ASTliterals*  ) =0;;
 };
 
 class ASTprogram:public ASTnode
@@ -101,6 +89,7 @@ class ASTliterals:public ASTnode
   ASTliterals(class ASTvariables* variables);
   void push_back(class ASTvariables* variables);
   void traverse();
+  void accept(visitor* );
 };
 
 class ASTcode_line : public ASTnode
