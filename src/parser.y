@@ -69,6 +69,11 @@ extern union node yylval;
 %type <code_line> code_line
 %type <readexp> readexp
 %type <if_statement> if_statement
+%type <code_statements> code_statements
+%type <literals> literals
+%type <decl_statement> decl_statement
+%type <decl_statements> decl_statements
+%type <program> program
 
 %start program;
 
@@ -77,27 +82,23 @@ extern union node yylval;
 /* descriptions of expected inputs corresponding actions (in C) */
 
 
-program : declblock decl_statements codeblock code_statements ;
+program : declblock decl_statements codeblock code_statements {$$ = new ASTprogram ($2,$4); printf("making program instance"); };
 
-decl_statements : lcb rcb  {;}
-                | lcb decl_statement rcb {;}
+decl_statements : lcb rcb  {$$= new ASTdecl_statements (NULL);}
+                 | lcb decl_statement rcb { $$ = new ASTdecl_statements($2)  ;}
 
 /* declaration statements */
-decl_statement : int_datatype literals ';' {;}
-                 | decl_statement int_datatype literals ';' {;}
+decl_statement : int_datatype literals ';' {$$ = new ASTdecl_statement($2);}
+           | decl_statement int_datatype literals ';' {$$->push_back($3);}
                  ;
 
-code_statements : lcb rcb  {;}
-                | lcb code_line rcb {;}
+code_statements : lcb rcb  {$$=new ASTcode_statements(NULL);}
+                | lcb code_line rcb {$$ = new ASTcode_statements($2);}
 
 /* comma separated values */
-literals : literals comma final_identifier {;}
-           | final_identifier {;} 
+literals : literals comma variables {$$->push_back($3);}
+          | variables {$$ = new ASTliterals($1);}
            ;
-
-/* the final identifier array or simple variable */
-final_identifier : identifier {printf("setting up var %s\n",$1);}
-                  | identifier  lsb  number rsb {printf("setting up arrar %d\n",$3);}                  ;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
 code_line :      goto_statement ';'                   {$$=$1;}
@@ -127,6 +128,8 @@ goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$
 
 assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
            ;
+
+
 
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
             | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");}; 

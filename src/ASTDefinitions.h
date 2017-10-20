@@ -6,6 +6,7 @@ union node
   int num;
   char* id;
   class ASTvariables* variables;
+  class ASTcode_statements* code_statements;
   class ASTfinal_printexp* final_printexp;
   class ASTprintexp* printexp;
   class ASTreadexp* readexp;
@@ -16,6 +17,10 @@ union node
   class ASTfor_statement* for_statement ;
   class ASTif_statement* if_statement ;
   class ASTcode_line* code_line;
+  class ASTliterals* literals;
+  class ASTdecl_statement* decl_statement;
+  class ASTdecl_statements* decl_statements;
+  class ASTprogram* program;
 };
 
 typedef union node YYSTYPE;
@@ -23,6 +28,52 @@ typedef union node YYSTYPE;
 
 class ASTnode
 {
+  
+};
+
+class ASTprogram:public ASTnode
+{
+ private:
+  class ASTdecl_statements* decl_statements;
+  class ASTcode_statements* code_statements;
+ public:
+  ASTprogram(class ASTdecl_statements* ASTdecl_statements, class ASTcode_statements* ASTcode_statements);
+};
+
+
+class ASTcode_statements:public ASTnode
+{
+ private:
+  class ASTcode_line* code_line;
+ public:
+  ASTcode_statements(class ASTcode_line* code_line);
+};
+
+class ASTdecl_statement:public ASTnode
+{
+ private:
+  vector<class ASTliterals*> literals;
+ public:
+  ASTdecl_statement(class ASTliterals* literals);
+  void push_back(class ASTliterals* literals);
+};
+
+class ASTdecl_statements:public ASTnode
+{
+ private:
+  class ASTdecl_statement* decl_statement;
+ public:
+  ASTdecl_statements(class ASTdecl_statement* decl_statement);
+};
+
+
+class ASTliterals:public ASTnode
+{
+ private:
+  vector<class ASTvariables*> variables;
+ public:
+  ASTliterals(class ASTvariables* variables);
+  void push_back(class ASTvariables* variables);
 };
 
 class ASTvariables : public ASTnode

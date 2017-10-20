@@ -5,6 +5,45 @@ using namespace std;
 
 extern int errors;
 
+
+ASTprogram::ASTprogram (class ASTdecl_statements* ASTdecl_statements, class ASTcode_statements* ASTcode_statements)
+{
+  this->decl_statements = decl_statements;
+  this->code_statements = code_statements;
+}
+
+ASTdecl_statement::ASTdecl_statement(class ASTliterals* literals)
+{
+  this->literals.push_back(literals);
+}
+
+ASTdecl_statements::ASTdecl_statements(class ASTdecl_statement*  decl_statement )
+{
+  this->decl_statement = decl_statement;
+}
+
+
+void ASTdecl_statement::push_back(class ASTliterals* literals)
+{
+  this->literals.push_back(literals);
+}
+
+ASTliterals::ASTliterals(class ASTvariables* variables)
+{
+  this->variables.push_back(variables);
+}
+
+void ASTliterals::push_back(class ASTvariables* variables)
+{
+  this->variables.push_back(variables);
+}
+
+ASTcode_statements::ASTcode_statements( class ASTcode_line* code_line)
+{
+  this->code_line=code_line;
+}
+
+
 ASTvariables::ASTvariables(string var_type,string size_type, string name,int int_size,string ide_size )
 {
   this->var_type=var_type;
