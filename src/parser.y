@@ -75,6 +75,7 @@ class ASTprogram *start = NULL;
 %type <decl_statement> decl_statement
 %type <decl_statements> decl_statements
 %type <program> program
+%type <code_lines> code_lines
 
 
 %start program;
@@ -105,36 +106,31 @@ decl_statement : int_datatype literals ';'
 };
 
 code_statements : lcb rcb  {$$=new ASTcode_statements(NULL);}
-                | lcb code_line rcb {$$ = new ASTcode_statements($2);}
-
+                | lcb code_lines rcb {$$ = new ASTcode_statements($2);}
+                
 /* comma separated values */
 literals : literals comma variables {$$->push_back($3); }
 | variables {$$ = new ASTliterals($1); }
            ;
+
+code_lines : code_lines code_line { $1->push_back($2); $$=$1;}
+           | code_line {$$ = new  vector<ASTcode_line*>(1,$1); }
+;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
 code_line :      goto_statement ';'                   {$$=$1;}
                  | for_statement                      {$$=$1;}
                  | if_statement                       {$$=$1;}
                  | assignment ';'                     {$$=$1;}
-                 | print printexp ';'		      {$$=$2;}
-                 | read_token readexp ';'             {$$=$2;}
+                 | print printexp ';'	      {$$=$2;cout<<"printexp"<<endl;}
+                 | read_token readexp ';'      {$$=$2; cout<<"readexp"<<endl;}
                  | label colon                        {;}
-                 | code_line print printexp ';'	      {$$->push_back($3);}
-                 | code_line read_token readexp ';'   {$$->push_back($3);}
-                 | code_line assignment ';'           {$$->push_back($2);}
-                 | code_line if_statement             {$$->push_back($2);}
-                 | code_line for_statement            {$$->push_back($2);}
-                 | code_line goto_statement ';'       {$$->push_back($2);}
-                 | code_line label colon              {;}
-                 ;
+                  ;
+
+if_statement : if_token lrb exp rrb lcb code_statements rcb {$$ = new ASTif_statement($3,$6); } ;
 
 
-if_statement : if_token lrb exp rrb lcb code_line rcb {$$ = new ASTif_statement($3,$6); } ;
-
-
-
-for_statement : for_token identifier eq number comma number lcb code_line rcb {$$ = new ASTfor_statement($2,$4,$6,$8) ;} ;
+for_statement : for_token identifier eq number comma number lcb code_statements rcb {$$ = new ASTfor_statement($2,$4,$6,$8) ;} ;
 
 goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
             | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
@@ -178,8 +174,8 @@ final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); printf("print stri
 | variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
 
-readexp :      readexp comma variables { $$->push_back($3); }
-                | variables { $$ = new ASTreadexp($1); }
+readexp :      readexp comma variables { $$->push_back($3); cout<<"print vas"<<$3->name; }
+              | variables { $$ = new ASTreadexp($1); cout<<"print vas"<<$1->name<<endl; }
                 ;
 
 
@@ -192,8 +188,7 @@ int main (void)
   yyparse ();
 
   Interpretor* Interpr = new Interpretor();
-  Interpr->visit(start);
-
+  start->accept(Interpr);
   
   return 0;
   

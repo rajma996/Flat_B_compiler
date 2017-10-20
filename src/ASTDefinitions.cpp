@@ -65,10 +65,9 @@ void ASTdecl_statement::accept(visitor* v)
   v->visit(this);
 }
 
-ASTcode_statements::ASTcode_statements( class ASTcode_line* code_line)
+ASTcode_statements::ASTcode_statements( vector<ASTcode_line*>* code_lines )
 {
-  cout<<"enterint code statements"<<endl;
-  this->code_line=code_line;
+  this->code_lines=code_lines;
 }
 
 void ASTcode_statements::traverse()
@@ -103,15 +102,11 @@ void ASTliterals::accept(class visitor* v)
   v->visit(this);
 }
 
-void ASTcode_line::push_back(class ASTcode_line* code_line)
-{
-  this->code_line.push_back(code_line);
-}
 
-ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line)
+ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_statements* code_statements)
 {
   this->exp = exp;
-  this->code_line = code_line;
+  this->code_statements = code_statements;
 }
 
 void ASTif_statement::accept(visitor* v)
@@ -119,12 +114,12 @@ void ASTif_statement::accept(visitor* v)
   v->visit(this);
 }
 
-ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line)
+ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_statements* code_statements )
 {
   this->identifier = identifier;
   this->lowerrange = lowerrange;
   this->higherrange = higherrange;
-  this->code_line = code_line;
+  this->code_statements = code_statements;
 }
 
 void ASTfor_statement::accept(visitor* v)

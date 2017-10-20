@@ -72,27 +72,16 @@ public :
   void visit(class ASTcode_statements* code_statements)
   {
     cout<<"code statement"<<endl;
-    if (code_statements->code_line==NULL)
+    if (code_statements->code_lines==NULL)
       {
         cout<<"no code statement"<<endl;
         return;
       }
-    code_statements->code_line->accept(this);
+    cout<<"outsize"<<endl;
+    for (int i=0;i<code_statements->code_lines->size();i++)
+      ((*(code_statements->code_lines))[i])->accept(this);
   }
 
-  void visit(class ASTcode_line* code_line)
-  {
-    
-    ASTprintexp* v = dynamic_cast<ASTprintexp*>(code_line);
-    if (v)
-      {
-        cout<<"print satement de"<<endl;
-        cout<<v->printexp_vec.size()<<endl;
-        v->accept(this);
-      }
-    
-    return;
-  }
 
   void visit(class ASTif_statement* if_statement)
   {
@@ -125,10 +114,19 @@ public :
 
   void visit(class ASTreadexp* readexp)
   {
+    for (int i=0;i<readexp->variables.size();i++)
+      {
+        class ASTvariables* var = readexp->variables[i];
+        this->validatevar(var);
+        if (var->var_type=="array")
+          cin>>symbol_table[make_pair(var->name,var->int_size)];
+        else if (var->var_type=="normal")
+          cin>>symbol_table[make_pair(var->name,-1)];
+      }
     return;
   }
 
-  void printvar(class ASTvariables* var)
+  void validatevar(class ASTvariables* var)
   {
     if (var->var_type=="array")
       {
@@ -144,7 +142,6 @@ public :
             cout<<"array index out of bound"<<endl;
             exit(0);
           }
-        cout<<symbol_table[make_pair(var->name,var->int_size)];
       }
 
     else if (var->var_type=="normal")
@@ -155,9 +152,17 @@ public :
             cout<<"variable not found"<<endl;
             exit(0);
           }
-        cout<<symbol_table[make_pair(var->name,-1)];
       }
-    
+
+  }
+
+  void printvar(class ASTvariables* var)
+  {
+    validatevar(var);
+    if (var->var_type=="array")
+      cout<<symbol_table[make_pair(var->name,var->int_size)];
+    else
+      cout<<symbol_table[make_pair(var->name,-1)];
     return;
   }
   

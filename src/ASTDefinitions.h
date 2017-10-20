@@ -21,6 +21,7 @@ union node
   class ASTdecl_statement* decl_statement;
   class ASTdecl_statements* decl_statements;
   class ASTprogram* program;
+  vector<ASTcode_line*> *code_lines;
 };
 
 typedef union node YYSTYPE;
@@ -39,7 +40,6 @@ class visitor
   virtual void visit(class ASTdecl_statement*) =0;;
   virtual void visit(class ASTliterals*) =0;
   virtual void visit(class ASTcode_statements*) =0;
-  virtual void visit(class ASTcode_line*) =0;
   virtual void visit(class ASTif_statement*) = 0;
   virtual void visit(class ASTfor_statement*) = 0;
   virtual void visit(class ASTgoto_statement*)=0;
@@ -83,10 +83,11 @@ public:
 
 class ASTcode_statements:public ASTnode
 {
-public:
-  class ASTcode_line* code_line;
  public:
-  ASTcode_statements(class ASTcode_line* code_line);
+  vector<ASTcode_line*> *code_lines;
+  
+ public:
+  ASTcode_statements(vector<ASTcode_line* > *code_lines);
   void traverse();
   void accept(visitor* v);
 };
@@ -105,9 +106,6 @@ class ASTliterals:public ASTnode
 class ASTcode_line : public ASTnode
 {
  public :
-  vector<class ASTcode_line*> code_line;
- public :
-  void push_back(class ASTcode_line* code_line);
   virtual void accept(visitor*)=0;
 };
 
@@ -115,9 +113,9 @@ class ASTif_statement : public ASTcode_line
 {
  public :
   class ASTexp* exp;
-  class ASTcode_line* code_line;
+  class ASTcode_statements* code_statements;
  public:
-  ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line);
+  ASTif_statement(class ASTexp* exp,class ASTcode_statements* code_statements);
   void accept(visitor*);
 };
 
@@ -127,9 +125,9 @@ class ASTfor_statement : public ASTcode_line
   string identifier;
   int lowerrange;
   int higherrange;
-  class ASTcode_line* code_line;
+  class ASTcode_statements* code_statements;
  public:
-  ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line);
+  ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_statements* code_statements);
   void accept(visitor*);
 };
 
