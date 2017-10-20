@@ -108,15 +108,15 @@ void ASTcode_line::push_back(class ASTcode_line* code_line)
   this->code_line.push_back(code_line);
 }
 
-void ASTcode_line::accept(visitor* v)
-{
-  v->visit(this);
-}
-
 ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line)
 {
   this->exp = exp;
   this->code_line = code_line;
+}
+
+void ASTif_statement::accept(visitor* v)
+{
+  v->visit(this);
 }
 
 ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line)
@@ -127,6 +127,10 @@ ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherra
   this->code_line = code_line;
 }
 
+void ASTfor_statement::accept(visitor* v)
+{
+  v->visit(this);
+}
 
 ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
 {
@@ -134,10 +138,20 @@ ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
   this->exp = exp;
 }
 
+void ASTgoto_statement::accept(visitor* v)
+{
+  v->visit(this);
+}
+
 ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp)
 {
   this->variable = variable;
   this->exp = exp;
+}
+
+void ASTassignment::accept(visitor* v)
+{
+  v->visit(this);
 }
 
 ASTvariables::ASTvariables(string var_type,string size_type, string name,int int_size,string ide_size )
@@ -148,6 +162,7 @@ ASTvariables::ASTvariables(string var_type,string size_type, string name,int int
   this->int_size=int_size;
   this->ide_size = ide_size;
 }
+
 ASTexp::ASTexp(string exptype, class ASTexp* lexp, class ASTexp* rexp,string operator_type, class ASTterm* term)
 {
   this->exptype = exptype ;
@@ -174,6 +189,11 @@ void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
   this->printexp_vec.push_back(final_printexp);
 }
 
+void ASTprintexp::accept(visitor* v)
+{
+  v->visit(this);
+}
+
 
 ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
 {
@@ -181,6 +201,10 @@ ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
   this->var = var;
 }
 
+void ASTfinal_printexp::accept(visitor* v)
+{
+  v->visit(this);
+}
 
 ASTreadexp::ASTreadexp(class ASTvariables* variables)
 {
@@ -190,4 +214,9 @@ ASTreadexp::ASTreadexp(class ASTvariables* variables)
 void ASTreadexp::push_back(class ASTvariables* variables)
 {
   this->variables.push_back(variables);
+}
+
+void ASTreadexp::accept(visitor* v)
+{
+  v->visit(this);
 }

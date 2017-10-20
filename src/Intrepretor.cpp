@@ -72,6 +72,7 @@ public :
 
   void visit(class ASTcode_statements* code_statements)
   {
+    cout<<"code statement"<<endl;
     if (code_statements->code_line==NULL)
       {
         cout<<"no code statement"<<endl;
@@ -82,7 +83,48 @@ public :
 
   void visit(class ASTcode_line* code_line)
   {
+    ASTif_statement* v = dynamic_cast<ASTif_statement*>(code_line);
+    if (v)
+       {
+         cout<<"if statementdetected";
+       }
     return;
   }
+
+  void visit(class ASTif_statement* if_statement)
+  {
+    return ;
+  }
+
+  void visit(class ASTfor_statement* for_statement)
+  {
+    return;
+  }
+
+  void visit(class ASTgoto_statement* goto_statement)
+  {
+    return;
+  }
+
+  void visit(class ASTassignment* assignment)
+  {
+    return ;
+  }
+
+  void visit(class ASTprintexp* printexp)
+  {
+    return;
+  }
+
+  void visit(class ASTreadexp* readexp)
+  {
+    return;
+  }
+
+  void visit(class ASTfinal_printexp* final_printexp)
+  {
+    return;
+  }
+
   
 };

@@ -39,6 +39,7 @@ class visitor
   virtual void visit(class ASTdecl_statement*) =0;;
   virtual void visit(class ASTliterals*) =0;
   virtual void visit(class ASTcode_statements*) =0;
+  virtual void visit(class ASTcode_line*) =0;
 };
 
 class ASTprogram:public ASTnode
@@ -100,7 +101,7 @@ class ASTcode_line : public ASTnode
   vector<class ASTcode_line*> code_line;
  public :
   void push_back(class ASTcode_line* code_line);
-  void accept(visitor*);
+  virtual void accept(visitor*)=0;
 };
 
 class ASTif_statement : public ASTcode_line
@@ -110,6 +111,7 @@ class ASTif_statement : public ASTcode_line
   class ASTcode_line* code_line;
  public:
   ASTif_statement(class ASTexp* exp,class ASTcode_line* code_line);
+  void accept(visitor*);
 };
 
 class ASTfor_statement : public ASTcode_line
@@ -121,6 +123,7 @@ class ASTfor_statement : public ASTcode_line
   class ASTcode_line* code_line;
  public:
   ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_line* code_line);
+  void accept(visitor*);
 };
 
 
@@ -131,6 +134,7 @@ class ASTgoto_statement : public ASTcode_line
   class ASTexp* exp;
  public :
   ASTgoto_statement(string label, class ASTexp* exp);
+  void accept(visitor*);
 };
 
 class ASTassignment :public ASTcode_line
@@ -140,6 +144,7 @@ class ASTassignment :public ASTcode_line
   class ASTexp* exp ;
  public:
   ASTassignment(class ASTvariables* variable, class ASTexp* exp);
+  void accept(visitor*);
 };
 
 class ASTvariables : public ASTnode
@@ -184,16 +189,18 @@ class ASTprintexp: public ASTcode_line
  public :
   ASTprintexp(class ASTfinal_printexp * final_printexp);
   void push_back(class ASTfinal_printexp * final_printexp);
+  void accept(visitor* v);
 };
 
 
-class ASTfinal_printexp: public ASTnode
+class ASTfinal_printexp: public ASTcode_line
 {
  public:
   string str;
   class ASTvariables* var;
  public :
   ASTfinal_printexp(string str,class ASTvariables* var);
+  void accept(visitor* v);
 };
 
 
@@ -204,6 +211,7 @@ class ASTreadexp: public ASTcode_line
  public:
   ASTreadexp(class ASTvariables* variables);
   void push_back(class ASTvariables* variables);
+  void accept(visitor*);
 };
 
 

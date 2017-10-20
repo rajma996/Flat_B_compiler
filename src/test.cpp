@@ -1,36 +1,33 @@
-/*
- * USER: Raj Manvar
- * LANG: C++
- *  */
-#include <bits/stdc++.h>
-#include <unistd.h>
-#define pb push_back
-#define mp make_pair
-#define f first
-#define s second
-#define DRT()  int t; cin>>t; while(t--)
-#define TRACE
-#ifdef TRACE
-#define trace1(x)                cerr << #x << ": " << x << endl;
-#define trace2(x, y)             cerr << #x << ": " << x << " | " << #y << ": " << y << endl;
-#define trace3(x, y, z)          cerr << #x << ": " << x << " | " << #y << ": " << y << " | " << #z << ": " << z << endl;
-#define trace4(a, b, c, d)       cerr << #a << ": " << a << " | " << #b << ": " << b << " | " << #c << ": " << c << " | " << #d << ": " << d << endl;
-#define trace5(a, b, c, d, e)    cerr << #a << ": " << a << " | " << #b << ": " << b << " | " << #c << ": " << c << " | " << #d << ": " << d << " | " << #e << ": " << e << endl;
-#define trace6(a, b, c, d, e, f) cerr << #a << ": " << a << " | " << #b << ": " << b << " | " << #c << ": " << c << " | " << #d << ": " << d << " | " << #e << ": " << e << " | " << #f << ": " << f << endl;
-#else
-#define trace1(x)
-#define trace2(x, y)
-#define trace3(x, y, z)
-#define trace4(a, b, c, d)
-#define trace5(a, b, c, d, e)
-#define trace6(a, b, c, d, e, f)
-#endif
+#include <iostream>
 using namespace std;
-typedef long long int lli;
+
+class A
+{
+    public:
+        virtual void f(){cout << "A::f()" << endl;}
+};
+
+class B : public A
+{
+    public:
+        void f(){cout << "B::f()" << endl;}
+};
 
 int main()
 {
-    string a= "asdlkfj";
-    cout<<a.find('s');
-    cout<<a.substr(1,4);
-}
+    A a;
+    B b;
+    a.f();        // A::f()
+    b.f();        // B::f()
+
+    A *pA = &a;   
+    B *pB = &b;   
+    pA->f();      // A::f()
+    pB->f();      // B::f()
+
+    pA = &b;
+    // pB = &a;      // not allowed
+      pB = dynamic_cast<B*>(pA); // allowed but it returns NULL
+    
+          return 0;
+          }
