@@ -148,8 +148,9 @@ class ASTassignment :public ASTcode_line
  public :
   class ASTvariables* variable;
   class ASTexp* exp ;
+  string label;
  public:
-  ASTassignment(class ASTvariables* variable, class ASTexp* exp);
+  ASTassignment(class ASTvariables* variable, class ASTexp* exp,string label);
   void accept(visitor*);
 };
 

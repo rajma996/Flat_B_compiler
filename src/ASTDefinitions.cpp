@@ -139,10 +139,13 @@ void ASTgoto_statement::accept(visitor* v)
   v->visit(this);
 }
 
-ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp)
+ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp,string label)
 {
+  if (label!="NULL")
+    cout<<"with label asssignment seen"<<endl;
   this->variable = variable;
   this->exp = exp;
+  this->label = label;
 }
 
 void ASTassignment::accept(visitor* v)

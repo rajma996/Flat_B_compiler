@@ -78,6 +78,8 @@ class ASTprogram *start = NULL;
 %type <decl_statements> decl_statements
 %type <program> program
 %type <code_lines> code_lines
+%type <assignment> withoutlabelassignment
+%type <assignment> withlableassignment
 
 %start program;
 %%
@@ -118,15 +120,18 @@ code_lines : code_lines code_line { $1->push_back($2); $$=$1;}
 ;
 
 /* all possible code lines : print, read, if, for, assignment,goto */
-code_line :      goto_statement ';'                   {$$=$1;}
+code_line :        goto_statement ';'                 {$$=$1;}
                  | for_statement                      {$$=$1;}
                  | if_statement                       {$$=$1;}
-                 | assignment ';'                     {$$=$1;}
+                 | withoutlabelassignment ';'         {$$=$1;}
                  | print printexp ';'	              {$$=$2;}
                  | read_token readexp ';'             {$$=$2;}
-                 | label colon                        {;}
-                  ;
+                 | withlableassignment ';'            {$$=$1;}
+                 ;
 
+withoutlabelassignment : variables eq exp {$$ = new ASTassignment($1,$3,"NULL");};
+
+withlableassignment : label colon variables eq exp {$$=new ASTassignment($3,$5,$1);};
 
 if_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5);  } ;
 
