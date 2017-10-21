@@ -114,6 +114,16 @@ void ASTif_statement::accept(visitor* v)
   v->visit(this);
 }
 
+void ASTif_statement::addlabel(string label)
+{
+  if (label!="NULL")
+    {
+      int colonind = label.find(':');
+      label =  label.substr(0,colonind);
+    }
+  this->label=label;
+}
+
 ASTfor_statement::ASTfor_statement(class ASTvariables* variable  ,int lowerrange,int higherrange,int difference,class ASTcode_statements* code_statements )
 {
   this->variable = variable;
@@ -130,7 +140,14 @@ void ASTfor_statement::accept(visitor* v)
 
 ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
 {
-  this->label = label;
+  string newlab = "";
+  for (int i=0;i<label.size();i++)
+    {
+      if ( (label[i]>='A' && label[i]<='Z') || (label[i]>='0' && label[i]<='9') )
+        newlab += label[i];
+      else break;
+    }
+  this->label = newlab;
   this->exp = exp;
 }
 

@@ -115,6 +115,16 @@ public :
 
   void visit(class ASTgoto_statement* goto_statement)
   {
+    int expval = 1;
+    if (goto_statement->exp!=NULL)
+      {
+        int expval = this->evaluateexpr(goto_statement->exp);
+      }
+    if (expval)
+      {
+        cout <<"now going to label "<<goto_statement->label<<endl;
+        cout<<goto_statement->label<<endl;
+      }
     return;
   }
 

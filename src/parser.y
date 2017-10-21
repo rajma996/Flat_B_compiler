@@ -85,6 +85,10 @@ class ASTprogram *start = NULL;
 %type <printexp> withlabelprintexp
 %type <readexp> withlabelreadexp
 %type <readexp> withoutlabelreadexp
+%type <if_statement> withoutlabelif_statement
+%type <if_statement> withlabelif_statement
+%type <for_statement> withoutlabelfor_statement
+%type <for_statement> withlabelfor_statement
 
 %start program;
 %%
@@ -126,8 +130,10 @@ code_lines : code_lines code_line { $1->push_back($2); $$=$1;}
 
 /* all possible code lines : print, read, if, for, assignment,goto */
 code_line :        goto_statement ';'                 {$$=$1;}
-                 | for_statement                      {$$=$1;}
-                 | if_statement                       {$$=$1;}
+                 | withoutlabelfor_statement          {$$=$1;}
+                 | withlabelfor_statement             {$$=$1;}
+                 | withoutlabelif_statement           {$$=$1;}
+                 | withlabelif_statement              {$$=$1;}
                  | withoutlabelassignment ';'         {$$=$1;}
                  | withoutlabelprintexp ';'           {$$=$1;}
                  | withlabelprintexp ';'              {$$=$1;}
@@ -135,6 +141,14 @@ code_line :        goto_statement ';'                 {$$=$1;}
                  | withlabelreadexp ';'               {$$=$1;}
                  | withlableassignment ';'            {$$=$1;}
                  ;
+
+
+withoutlabelfor_statement : for_statement              {$$=$1;};
+withlabelfor_statement : label colon for_statement     {$$=$3;};
+
+withlabelif_statement : label colon if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($5,$7); $$->addlabel($1); } ;
+
+withoutlabelif_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5); } ;
 
 withoutlabelreadexp : read_token readexp              {$$=$2;};
 
@@ -146,17 +160,12 @@ withlableassignment : label colon variables eq exp {cout<<$1<<' '<<' '<<$3<<endl
 withoutlabelprintexp : print printexp  {$$=$2;};
 withlabelprintexp : label colon print printexp  {$4->addlabel($1);  $$=$4;  };
 
-if_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5);  } ;
-
 for_statement : for_token variables eq number comma number code_statements {$$ = new ASTfor_statement($2,$4,$6,1,$7) ;}
 | for_token variables eq number comma number comma number code_statements {$$ = new ASTfor_statement($2,$4,$6,$8,$9) ;}  ;
 
 
-
 goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
             | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
-
-
 
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
 | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");   }; 

@@ -114,9 +114,11 @@ class ASTif_statement : public ASTcode_line
  public :
   class ASTexp* exp;
   class ASTcode_statements* code_statements;
+  string label;
  public:
   ASTif_statement(class ASTexp* exp,class ASTcode_statements* code_statements);
   void accept(visitor*);
+  void addlabel(string );
 };
 
 class ASTfor_statement : public ASTcode_line
