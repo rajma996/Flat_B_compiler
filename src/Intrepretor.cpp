@@ -8,6 +8,7 @@ class Interpretor: public visitor
 private:
   map<pair<string,int>,int>  symbol_table;
   map<string,int> array_size;
+  map<string,class ASTcode_line*> label_map;
 public :
   void visit(class ASTprogram* program)
   {
@@ -88,7 +89,10 @@ public :
 
   void visit(class ASTif_statement* if_statement)
   {
-    cout<<"visigint if statemetne"<<endl;
+    
+    if (if_statement->label!="NULL")
+        label_map[if_statement->label]=if_statement;
+    
     int exp_val = this->evaluateexpr(if_statement->exp);
     if (exp_val)
       if_statement->code_statements->accept(this);
@@ -97,6 +101,11 @@ public :
 
   void visit(class ASTfor_statement* for_statement)
   {
+    if (for_statement->label!="NULL")
+      {
+        label_map[for_statement->label]=for_statement;
+      }
+    
     map<pair<string,int>,int>::iterator it;
     int lowerrange = for_statement->lowerrange;
     int higherrange = for_statement->higherrange;
@@ -122,8 +131,17 @@ public :
       }
     if (expval)
       {
-        cout <<"now going to label "<<goto_statement->label<<endl;
-        cout<<goto_statement->label<<endl;
+        if (label_map.find(goto_statement->label)==label_map.end())
+          {
+            cout<<"No such label found"<<endl;
+            exit(0);
+          }
+        else
+          {
+            cout <<"now going to label "<<goto_statement->label<<endl;
+            label_map[goto_statement->label]->accept(this);
+            exit(0);
+          }
       }
     return;
   }
@@ -165,6 +183,9 @@ public :
 
   void visit(class ASTassignment* assignment)
   {
+    if (assignment->label!="NULL")
+      label_map[assignment->label]=assignment;
+    
     int expval = evaluateexpr(assignment->exp);
     this->getmapiterator(assignment->variable)->second = expval;
     return;
@@ -172,6 +193,9 @@ public :
 
   void visit(class ASTprintexp* printexp)
   {
+    if (printexp->label!="NULL")
+      label_map[printexp->label]=printexp;
+    
     for (int i=0;i<printexp->printexp_vec.size();i++)
         printexp->printexp_vec[i]->accept(this);
     //print end of line after print statement;
@@ -220,7 +244,9 @@ public :
 
   void visit(class ASTreadexp* readexp)
   {
-    cout<<"inside readexp visit"<<endl;
+    if (readexp->label!="NULL")
+      label_map[readexp->label]=readexp;
+
     for (int i=0;i<readexp->variables.size();i++)
       {
         class ASTvariables* var = readexp->variables[i];
@@ -230,8 +256,6 @@ public :
       }
     return;
   }
-
-
   void printvar(class ASTvariables* var)
   {
     validatevar(var);

@@ -129,9 +129,11 @@ class ASTfor_statement : public ASTcode_line
   int higherrange;
   int difference;
   class ASTcode_statements* code_statements;
+  string label;
  public:
   ASTfor_statement(class ASTvariables* variables,int lowerrange,int higherrange,int difference,class ASTcode_statements* code_statements);
   void accept(visitor*);
+  void addlabel(string label);
 };
 
 

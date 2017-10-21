@@ -138,6 +138,16 @@ void ASTfor_statement::accept(visitor* v)
   v->visit(this);
 }
 
+void ASTfor_statement::addlabel(string label)
+{
+  if (label!="NULL")
+    {
+      int colonind = label.find(':');
+      label =  label.substr(0,colonind);
+    }
+  this->label=label;
+}
+
 ASTgoto_statement::ASTgoto_statement(string label, class ASTexp* exp)
 {
   string newlab = "";

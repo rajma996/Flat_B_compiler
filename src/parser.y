@@ -15,6 +15,7 @@ class ASTprogram *start = NULL;
  
 %}
 
+
 %token int_datatype
 %token <id> array_num_index
 %token <id> array_identi_index
@@ -101,7 +102,6 @@ program : declblock decl_statements codeblock code_statements
   start = $$;
 };
 
-
 decl_statements : lcb decl_statement rcb
                 { $$ = new ASTdecl_statements($2);  }
 
@@ -128,6 +128,7 @@ code_lines : code_lines code_line { $1->push_back($2); $$=$1;}
            | code_line {$$ = new  vector<ASTcode_line*>(1,$1); }
 ;
 
+
 /* all possible code lines : print, read, if, for, assignment,goto */
 code_line :        goto_statement ';'                 {$$=$1;}
                  | withoutlabelfor_statement          {$$=$1;}
@@ -144,7 +145,8 @@ code_line :        goto_statement ';'                 {$$=$1;}
 
 
 withoutlabelfor_statement : for_statement              {$$=$1;};
-withlabelfor_statement : label colon for_statement     {$$=$3;};
+
+withlabelfor_statement : label colon for_statement     {$$=$3; $$->addlabel($1);};
 
 withlabelif_statement : label colon if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($5,$7); $$->addlabel($1); } ;
 
