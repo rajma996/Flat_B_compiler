@@ -114,11 +114,12 @@ void ASTif_statement::accept(visitor* v)
   v->visit(this);
 }
 
-ASTfor_statement::ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_statements* code_statements )
+ASTfor_statement::ASTfor_statement(class ASTvariables* variable  ,int lowerrange,int higherrange,int difference,class ASTcode_statements* code_statements )
 {
-  this->identifier = identifier;
+  this->variable = variable;
   this->lowerrange = lowerrange;
   this->higherrange = higherrange;
+  this->difference = difference;
   this->code_statements = code_statements;
 }
 
@@ -195,13 +196,14 @@ void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
 
 void ASTprintexp::accept(visitor* v)
 {
-  cout<<"back"<<endl;
   v->visit(this);
 }
 
 
 ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
 {
+  if (var==NULL)
+      str = str.substr(1,str.size()-2);
   this->str = str;
   this->var = var;
 }

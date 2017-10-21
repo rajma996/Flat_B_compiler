@@ -11,7 +11,7 @@ private:
 public :
   void visit(class ASTprogram* program)
   {
-    cout<<"visiting main node everything is below you"<<endl;
+    cout<<"visiting main node"<<endl;
     program->decl_statements->accept(this);
     program->code_statements->accept(this);
   }
@@ -79,10 +79,8 @@ public :
         cout<<"no code statement"<<endl;
         return;
       }
-    cout<<"outsize"<<endl;
     for (int i=0;i<code_statements->code_lines->size();i++)
       {
-        cout<<"calling "<<i<<endl;
         ((*(code_statements->code_lines))[i])->accept(this);
       }
   }
@@ -90,11 +88,28 @@ public :
 
   void visit(class ASTif_statement* if_statement)
   {
+    cout<<"visigint if statemetne"<<endl;
+    int exp_val = this->evaluateexpr(if_statement->exp);
+    if (exp_val)
+      if_statement->code_statements->accept(this);
     return ;
   }
 
   void visit(class ASTfor_statement* for_statement)
   {
+    map<pair<string,int>,int>::iterator it;
+    int lowerrange = for_statement->lowerrange;
+    int higherrange = for_statement->higherrange;
+    int diff = for_statement->difference;
+    it = this->getmapiterator(for_statement->variable);
+    for (it->second=lowerrange;it->second<=higherrange;it->second+=diff)
+      {
+        class ASTcode_statements* code_statements = for_statement->code_statements;
+        for (int i=0;i<code_statements->code_lines->size();i++)
+          {
+            ((*(code_statements->code_lines))[i])->accept(this);
+          }
+      }
     return;
   }
 
@@ -105,7 +120,6 @@ public :
 
   int evaluateexpr(class ASTexp* expr)
   {
-    cout<<expr->operator_type<<endl;
     if (expr->exptype == "terminal")
       {
         if (expr->term->terminal_type=="number" )

@@ -122,12 +122,13 @@ class ASTif_statement : public ASTcode_line
 class ASTfor_statement : public ASTcode_line
 {
  public :
-  string identifier;
+  class ASTvariables* variable;
   int lowerrange;
   int higherrange;
+  int difference;
   class ASTcode_statements* code_statements;
  public:
-  ASTfor_statement(string identifier,int lowerrange,int higherrange,class ASTcode_statements* code_statements);
+  ASTfor_statement(class ASTvariables* variables,int lowerrange,int higherrange,int difference,class ASTcode_statements* code_statements);
   void accept(visitor*);
 };
 

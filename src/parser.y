@@ -79,7 +79,6 @@ class ASTprogram *start = NULL;
 %type <program> program
 %type <code_lines> code_lines
 
-
 %start program;
 %%
 
@@ -106,13 +105,12 @@ decl_statement : int_datatype literals ';'
   $$->push_back($3);
 };
 
-
 code_statements : lcb rcb  {$$=new ASTcode_statements(NULL);}
                 | lcb code_lines rcb {$$ = new ASTcode_statements($2);}
                 
 /* comma separated values */
 literals : literals comma variables {$$->push_back($3); }
-| variables {$$ = new ASTliterals($1); }
+           | variables {$$ = new ASTliterals($1); }
            ;
 
 code_lines : code_lines code_line { $1->push_back($2); $$=$1;}
@@ -124,15 +122,18 @@ code_line :      goto_statement ';'                   {$$=$1;}
                  | for_statement                      {$$=$1;}
                  | if_statement                       {$$=$1;}
                  | assignment ';'                     {$$=$1;}
-                 | print printexp ';'	      {$$=$2;cout<<"printexp"<<endl;}
-                 | read_token readexp ';'      {$$=$2; cout<<"readexp"<<endl;}
+                 | print printexp ';'	              {$$=$2;}
+                 | read_token readexp ';'             {$$=$2;}
                  | label colon                        {;}
                   ;
 
-if_statement : if_token lrb exp rrb lcb code_statements rcb {$$ = new ASTif_statement($3,$6); } ;
+
+if_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5);  } ;
+
+for_statement : for_token variables eq number comma number code_statements {$$ = new ASTfor_statement($2,$4,$6,1,$7) ;}
+| for_token variables eq number comma number comma number code_statements {$$ = new ASTfor_statement($2,$4,$6,$8,$9) ;}  ;
 
 
-for_statement : for_token identifier eq number comma number lcb code_statements rcb {$$ = new ASTfor_statement($2,$4,$6,$8) ;} ;
 
 goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
             | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
@@ -143,7 +144,6 @@ assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
 | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");   }; 
             | identifier lsb identifier rsb {$$ = new ASTvariables("array","identifier",$1,-1,$3) ;}
-
 
 
 exp     :  exp pluss exp {$$ = new ASTexp("nonterminal",$1,$3,"plus",NULL) ;}
@@ -159,10 +159,8 @@ exp     :  exp pluss exp {$$ = new ASTexp("nonterminal",$1,$3,"plus",NULL) ;}
            | exp eqeq exp {$$ = new ASTexp("nonterminal",$1,$3,"eqeq",NULL);}
            | exp neq exp { $$ = new ASTexp("nonterminal",$1,$3,"neq",NULL);}
            | lrb exp rrb { $$ = $2;} 
-| term { $$ = new ASTexp("terminal",NULL,NULL,"NULL",$1); cout<<"term "<<$1<<endl; }
+           | term { $$ = new ASTexp("terminal",NULL,NULL,"NULL",$1);  }
            ;
-
-
 
 
 term    : number { $$ = new ASTterm($1,NULL,"number");}
@@ -171,12 +169,12 @@ term    : number { $$ = new ASTterm($1,NULL,"number");}
 
 /* print expression after print key word,comma separated identifiers or strings  */
 
-
 printexp :      printexp comma final_printexp { $$->push_back($3); }
                 | final_printexp { $$ = new ASTprintexp($1); }
                 ;
 
-final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); printf("print string %s\n",$1);} 
+
+final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); cout<<"string rncou"<<$1<<endl;  } 
 | variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
 
