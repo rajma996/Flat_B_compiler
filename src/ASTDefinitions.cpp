@@ -243,3 +243,13 @@ void ASTreadexp::accept(visitor* v)
 {
   v->visit(this);
 }
+
+void ASTreadexp::addlabel(string label)
+{
+    if (label!="NULL")
+    {
+      int colonind = label.find(':');
+      label =  label.substr(0,colonind);
+    }
+    this->label=label;
+}

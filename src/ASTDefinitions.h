@@ -217,10 +217,12 @@ class ASTreadexp: public ASTcode_line
 {
  public:
   vector<class ASTvariables*> variables;
+  string label;
  public:
   ASTreadexp(class ASTvariables* variables);
   void push_back(class ASTvariables* variables);
   void accept(visitor*);
+  void addlabel(string label);
 };
 
 

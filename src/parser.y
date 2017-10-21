@@ -78,10 +78,13 @@ class ASTprogram *start = NULL;
 %type <decl_statements> decl_statements
 %type <program> program
 %type <code_lines> code_lines
+
 %type <assignment> withoutlabelassignment
 %type <assignment> withlableassignment
 %type <printexp> withoutlabelprintexp
 %type <printexp> withlabelprintexp
+%type <readexp> withlabelreadexp
+%type <readexp> withoutlabelreadexp
 
 %start program;
 %%
@@ -128,9 +131,14 @@ code_line :        goto_statement ';'                 {$$=$1;}
                  | withoutlabelassignment ';'         {$$=$1;}
                  | withoutlabelprintexp ';'           {$$=$1;}
                  | withlabelprintexp ';'              {$$=$1;}
-                 | read_token readexp ';'             {$$=$2;}
+                 | withoutlabelreadexp ';'            {$$=$1;}
+                 | withlabelreadexp ';'               {$$=$1;}
                  | withlableassignment ';'            {$$=$1;}
                  ;
+
+withoutlabelreadexp : read_token readexp              {$$=$2;};
+
+withlabelreadexp : label colon read_token readexp     {$4->addlabel($1); $$=$4;};
 
 withoutlabelassignment : variables eq exp {$$ = new ASTassignment($1,$3,"NULL");};
 withlableassignment : label colon variables eq exp {cout<<$1<<' '<<' '<<$3<<endl; $$=new ASTassignment($3,$5,$1);};
