@@ -193,10 +193,12 @@ class ASTprintexp: public ASTcode_line
 {
  public:
   vector<class ASTfinal_printexp*> printexp_vec;
+  string label;
  public :
-  ASTprintexp(class ASTfinal_printexp * final_printexp);
+  ASTprintexp(class ASTfinal_printexp * final_printexp,string label);
   void push_back(class ASTfinal_printexp * final_printexp);
   void accept(visitor* v);
+  void addlabel(string s);
 };
 
 

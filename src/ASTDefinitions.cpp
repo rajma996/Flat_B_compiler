@@ -142,7 +142,10 @@ void ASTgoto_statement::accept(visitor* v)
 ASTassignment::ASTassignment(class ASTvariables* variable, class ASTexp* exp,string label)
 {
   if (label!="NULL")
-    cout<<"with label asssignment seen"<<endl;
+    {
+      int colonind = label.find(':');
+      label =  label.substr(0,colonind);
+    }
   this->variable = variable;
   this->exp = exp;
   this->label = label;
@@ -187,9 +190,10 @@ ASTterm::ASTterm(int number,class ASTvariables * variable, string terminal_type)
   this->terminal_type = terminal_type;
 }
 
-ASTprintexp::ASTprintexp(class ASTfinal_printexp * final_printexp)
+ASTprintexp::ASTprintexp(class ASTfinal_printexp * final_printexp,string label)
 {
   this->printexp_vec.push_back(final_printexp);
+  this->label = label;
 }
 
 void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)
@@ -202,6 +206,15 @@ void ASTprintexp::accept(visitor* v)
   v->visit(this);
 }
 
+void ASTprintexp::addlabel(string label)
+{
+    if (label!="NULL")
+    {
+      int colonind = label.find(':');
+      label =  label.substr(0,colonind);
+    }
+    this->label=label;
+}
 
 ASTfinal_printexp::ASTfinal_printexp(string str,class ASTvariables* var)
 {

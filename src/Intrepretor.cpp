@@ -163,9 +163,9 @@ public :
   void visit(class ASTprintexp* printexp)
   {
     for (int i=0;i<printexp->printexp_vec.size();i++)
-      {
         printexp->printexp_vec[i]->accept(this);
-      }
+    //print end of line after print statement;
+    cout<<endl;
     return;
   }
 

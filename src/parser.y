@@ -80,6 +80,8 @@ class ASTprogram *start = NULL;
 %type <code_lines> code_lines
 %type <assignment> withoutlabelassignment
 %type <assignment> withlableassignment
+%type <printexp> withoutlabelprintexp
+%type <printexp> withlabelprintexp
 
 %start program;
 %%
@@ -124,14 +126,17 @@ code_line :        goto_statement ';'                 {$$=$1;}
                  | for_statement                      {$$=$1;}
                  | if_statement                       {$$=$1;}
                  | withoutlabelassignment ';'         {$$=$1;}
-                 | print printexp ';'	              {$$=$2;}
+                 | withoutlabelprintexp ';'           {$$=$1;}
+                 | withlabelprintexp ';'              {$$=$1;}
                  | read_token readexp ';'             {$$=$2;}
                  | withlableassignment ';'            {$$=$1;}
                  ;
 
 withoutlabelassignment : variables eq exp {$$ = new ASTassignment($1,$3,"NULL");};
+withlableassignment : label colon variables eq exp {cout<<$1<<' '<<' '<<$3<<endl; $$=new ASTassignment($3,$5,$1);};
 
-withlableassignment : label colon variables eq exp {$$=new ASTassignment($3,$5,$1);};
+withoutlabelprintexp : print printexp  {$$=$2;};
+withlabelprintexp : label colon print printexp  {$4->addlabel($1);  $$=$4;  };
 
 if_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5);  } ;
 
@@ -143,8 +148,7 @@ for_statement : for_token variables eq number comma number code_statements {$$ =
 goto_statement : goto_token label if_token exp { $$ = new ASTgoto_statement($2,$4);}
             | goto_token label { $$ = new ASTgoto_statement($2,NULL);} ;
 
-assignment : variables eq exp  { $$ = new ASTassignment($1,$3);}
-           ;
+
 
 variables : identifier {$$ = new ASTvariables("normal","none",$1,-1,"none"); }
 | identifier lsb number rsb {$$ = new ASTvariables("array","integer",$1,$3,"none");   }; 
@@ -175,11 +179,11 @@ term    : number { $$ = new ASTterm($1,NULL,"number");}
 /* print expression after print key word,comma separated identifiers or strings  */
 
 printexp :      printexp comma final_printexp { $$->push_back($3); }
-                | final_printexp { $$ = new ASTprintexp($1); }
+             | final_printexp { $$ = new ASTprintexp($1,"NULL"); }
                 ;
 
 
-final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); cout<<"string rncou"<<$1<<endl;  } 
+final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); } 
 | variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
 
