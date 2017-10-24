@@ -98,7 +98,9 @@ public :
     
     int exp_val = this->evaluateexpr(if_statement->exp);
     if (exp_val)
-      if_statement->code_statements->accept(this);
+      if_statement->if_code_statements->accept(this);
+    else if (!exp_val && if_statement->else_code_statements!=NULL)
+      if_statement->else_code_statements->accept(this);
 
     call_next(if_statement,this);
     return ;

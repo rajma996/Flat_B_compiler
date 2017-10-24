@@ -103,10 +103,11 @@ void ASTliterals::accept(class visitor* v)
 }
 
 
-ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_statements* code_statements)
+ASTif_statement::ASTif_statement(class ASTexp* exp,class ASTcode_statements* if_code_statements,class ASTcode_statements* else_code_statements)
 {
   this->exp = exp;
-  this->code_statements = code_statements;
+  this->if_code_statements = if_code_statements;
+  this->else_code_statements = else_code_statements;
 }
 
 void ASTif_statement::accept(visitor* v)

@@ -15,12 +15,12 @@ class ASTprogram *start = NULL;
  
 %}
 
-
 %token int_datatype
 %token <id> array_num_index
 %token <id> array_identi_index
 %token <id> label
 %token if_token
+%token else_token
 %token for_token
 %token print
 %token comma
@@ -154,9 +154,11 @@ withoutlabelfor_statement : for_statement              {$$=$1;};
 
 withlabelfor_statement : label colon for_statement     {$$=$3; $$->addlabel($1);};
 
-withlabelif_statement : label colon if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($5,$7); $$->addlabel($1); } ;
+withlabelif_statement : label colon if_token lrb exp rrb code_statements  {$$ = new ASTif_statement($5,$7,NULL); $$->addlabel($1); } ;
+| label colon if_token lrb exp rrb code_statements else_token lrb code_statements rrb { $$ = new ASTif_statement($5,$7,$10); };
 
-withoutlabelif_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5); } ;
+withoutlabelif_statement : if_token lrb exp rrb  code_statements  {$$ = new ASTif_statement($3,$5,NULL); } ;
+| if_token lrb exp rrb code_statements else_token code_statements {$$ = new ASTif_statement($3,$5,$7); };
 
 withoutlabelreadexp : read_token readexp              {$$=$2;};
 

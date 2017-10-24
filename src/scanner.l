@@ -19,6 +19,7 @@ extern int errors;
 "if"             {return if_token;}
 "for"            {return for_token;}
 "goto"           {return goto_token;}
+"else"           {return else_token;}
 \"[^\"]*\"       {yylval.id = yytext ; return strings ;}
 "{"              {return lcb;}
 "}"              {return rcb;}
