@@ -221,6 +221,12 @@ ASTprintexp::ASTprintexp(class ASTfinal_printexp * final_printexp,string label)
 {
   this->printexp_vec.push_back(final_printexp);
   this->label = label;
+  this->println = 0;
+}
+
+void ASTprintexp::addprintln()
+{
+  this->println=1;
 }
 
 void ASTprintexp::push_back(class ASTfinal_printexp * final_printexp)

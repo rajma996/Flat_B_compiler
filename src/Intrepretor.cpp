@@ -14,7 +14,6 @@ private:
 public :
   void visit(class ASTprogram* program)
   {
-    cout<<"visiting main node"<<endl;
     program->decl_statements->accept(this);
         
     for (int i=0;i<program->code_statements->code_lines->size()-1;i++)
@@ -27,7 +26,6 @@ public :
   
   void visit(class ASTdecl_statements* decl_statements)
   {
-    cout<<"visiting decl statements"<<endl;
     if (decl_statements->decl_statement==NULL)
       {
         cout<<"No declarations"<<endl;
@@ -38,7 +36,6 @@ public :
   
   void visit(class ASTdecl_statement* decl_statement)
   {
-    cout<<"visiting dec statement"<<endl;
     for (int i=0;i<decl_statement->literals.size();i++)
       decl_statement->literals[i]->accept(this);
   }
@@ -46,7 +43,6 @@ public :
   // initializint all variables to zero.
   void visit(class ASTliterals* literals)
   {
-    cout<<"visiting the literans"<<endl;
     for (int i=0;i<literals->variables.size();i++)
       {
         class ASTvariables* temp_variable = literals->variables[i];
@@ -55,7 +51,7 @@ public :
             if (symbol_table.find(make_pair(temp_variable->name,-1))!=symbol_table.end())
               {
                 cout<<"variable previousley defined";
-                return;
+                exit(0);
               }
             else
               symbol_table[make_pair(temp_variable->name,-1)]=0;
@@ -82,7 +78,6 @@ public :
 
   void visit(class ASTcode_statements* code_statements)
   {
-    cout<<"code statement"<<endl;
     if (code_statements->code_lines==NULL)
       {
         cout<<"no code statement"<<endl;
@@ -102,7 +97,6 @@ public :
         label_map[if_statement->label]=if_statement;
     
     int exp_val = this->evaluateexpr(if_statement->exp);
-    cout<<"evaluated if exp "<<exp_val<<endl;
     if (exp_val)
       if_statement->code_statements->accept(this);
 
@@ -227,7 +221,8 @@ public :
     for (int i=0;i<printexp->printexp_vec.size();i++)
         printexp->printexp_vec[i]->accept(this);
     //print end of line after print statement;
-    cout<<endl;
+    if (printexp->println==1)
+      cout<<endl;
     call_next(printexp,this);
   }
 

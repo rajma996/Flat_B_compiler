@@ -90,6 +90,8 @@ class ASTprogram *start = NULL;
 %type <if_statement> withlabelif_statement
 %type <for_statement> withoutlabelfor_statement
 %type <for_statement> withlabelfor_statement
+%type <printexp>  withlabelprintlnexp
+%type <printexp> withoutlabelprintlnexp
 
 %start program;
 %%
@@ -141,7 +143,11 @@ code_line :        goto_statement ';'                 {$$=$1;}
                  | withoutlabelreadexp ';'            {$$=$1;}
                  | withlabelreadexp ';'               {$$=$1;}
                  | withlableassignment ';'            {$$=$1;}
+                 | withoutlabelprintlnexp ';'            {$$=$1;}
+                 | withlabelprintlnexp ';'               {$$=$1;}
                  ;
+
+
 
 
 withoutlabelfor_statement : for_statement              {$$=$1;};
@@ -157,10 +163,16 @@ withoutlabelreadexp : read_token readexp              {$$=$2;};
 withlabelreadexp : label colon read_token readexp     {$4->addlabel($1); $$=$4;};
 
 withoutlabelassignment : variables eq exp {$$ = new ASTassignment($1,$3,"NULL");};
+
 withlableassignment : label colon variables eq exp {cout<<$1<<' '<<' '<<$3<<endl; $$=new ASTassignment($3,$5,$1);};
 
 withoutlabelprintexp : print printexp  {$$=$2;};
+
 withlabelprintexp : label colon print printexp  {$4->addlabel($1);  $$=$4;  };
+
+withoutlabelprintlnexp : println printexp  {$$=$2; $$->addprintln();};
+
+withlabelprintlnexp : label colon println printexp  {$4->addlabel($1); $$=$4; $$->addprintln(); };
 
 for_statement : for_token variables eq number comma number code_statements {$$ = new ASTfor_statement($2,$4,$6,1,$7) ;}
 | for_token variables eq number comma number comma number code_statements {$$ = new ASTfor_statement($2,$4,$6,$8,$9) ;}  ;
@@ -197,13 +209,13 @@ term    : number { $$ = new ASTterm($1,NULL,"number");}
 
 /* print expression after print key word,comma separated identifiers or strings  */
 
-printexp :      printexp comma final_printexp { $$->push_back($3); }
-             | final_printexp { $$ = new ASTprintexp($1,"NULL"); }
+printexp :     printexp comma final_printexp { $$->push_back($3); }
+               | final_printexp { $$ = new ASTprintexp($1,"NULL"); }
                 ;
 
 
 final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); } 
-| variables { $$ = new ASTfinal_printexp("none",$1); }
+               | variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
 
 readexp :      readexp comma variables { $$->push_back($3); cout<<"print vas"<<$3->name; }
