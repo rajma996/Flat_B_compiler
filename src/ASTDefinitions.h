@@ -70,6 +70,7 @@ public:
   void accept(visitor*);
 };
 
+
 class ASTdecl_statement:public ASTnode
 {
 public:

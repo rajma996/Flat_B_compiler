@@ -1,4 +1,4 @@
-bcc:	parser.tab.c lex.yy.c
+bcc:	parser.tab.c lex.yy.c ASTDefinitions.cpp ASTDefinitions.h Intrepretor.cpp 
 	g++ -g parser.tab.c lex.yy.c ASTDefinitions.cpp Intrepretor.cpp -lfl -o bcc
 parser.tab.c: parser.y 
 	bison -d parser.y 

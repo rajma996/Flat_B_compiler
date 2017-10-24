@@ -9,12 +9,20 @@ private:
   map<pair<string,int>,int>  symbol_table;
   map<string,int> array_size;
   map<string,class ASTcode_line*> label_map;
+  map<ASTcode_line*,ASTcode_line*> nextline;
+  
 public :
   void visit(class ASTprogram* program)
   {
     cout<<"visiting main node"<<endl;
     program->decl_statements->accept(this);
-    program->code_statements->accept(this);
+        
+    for (int i=0;i<program->code_statements->code_lines->size()-1;i++)
+      {
+        nextline[((*(program->code_statements->code_lines))[i])]=((*(program->code_statements->code_lines))[i+1]);
+      }
+    // program->code_statements->accept(this);
+    (*(program->code_statements->code_lines))[0]->accept(this);
   }
   
   void visit(class ASTdecl_statements* decl_statements)
@@ -59,7 +67,7 @@ public :
                 array_size[temp_variable->name] = temp_variable->int_size;
                 int si = temp_variable->int_size;
                 for (int i=0;i<si;i++)
-                  {
+                 {
                     symbol_table[make_pair(temp_variable->name,i)]=0;
                   }
               }
@@ -94,8 +102,11 @@ public :
         label_map[if_statement->label]=if_statement;
     
     int exp_val = this->evaluateexpr(if_statement->exp);
+    cout<<"evaluated if exp "<<exp_val<<endl;
     if (exp_val)
       if_statement->code_statements->accept(this);
+
+    call_next(if_statement,this);
     return ;
   }
 
@@ -119,6 +130,7 @@ public :
             ((*(code_statements->code_lines))[i])->accept(this);
           }
       }
+    call_next(for_statement,this);
     return;
   }
 
@@ -127,22 +139,23 @@ public :
     int expval = 1;
     if (goto_statement->exp!=NULL)
       {
-        int expval = this->evaluateexpr(goto_statement->exp);
+        expval = this->evaluateexpr(goto_statement->exp);
       }
-    if (expval)
-      {
-        if (label_map.find(goto_statement->label)==label_map.end())
-          {
-            cout<<"No such label found"<<endl;
-            exit(0);
-          }
-        else
-          {
-            cout <<"now going to label "<<goto_statement->label<<endl;
-            label_map[goto_statement->label]->accept(this);
-            exit(0);
-          }
-      }
+    
+     if (expval)
+       {
+         if (label_map.find(goto_statement->label)==label_map.end())
+           {
+             cout<<"No such label found or you have defined label inside loop/block "<<endl;
+             exit(0);
+           }
+         else
+           {
+             cout <<"now going to label "<<goto_statement->label<<endl;
+             label_map[goto_statement->label]->accept(this);
+             exit(0);
+           }
+       }
     return;
   }
 
@@ -178,17 +191,32 @@ public :
       return ((evaluateexpr(expr->lexp)==evaluateexpr(expr->rexp)));
     else if  (expr->operator_type=="neq")
         return (evaluateexpr(expr->lexp)!=evaluateexpr(expr->rexp));
+  }
 
+  void call_next(class ASTcode_line* line,visitor* v)
+  {
+    map<ASTcode_line*,ASTcode_line*>::iterator it;
+    for (it = nextline.begin();it!=nextline.end();it++)
+      {
+        if (it->first==line)
+          {
+            nextline[it->first]->accept(v);
+          }
+      }
+    return ;
   }
 
   void visit(class ASTassignment* assignment)
   {
     if (assignment->label!="NULL")
       label_map[assignment->label]=assignment;
-    
+
+    cout<<"visiting a  assignment"<<assignment->variable->name<<endl;
+      
     int expval = evaluateexpr(assignment->exp);
     this->getmapiterator(assignment->variable)->second = expval;
-    return;
+
+    call_next(assignment,this);
   }
 
   void visit(class ASTprintexp* printexp)
@@ -200,7 +228,7 @@ public :
         printexp->printexp_vec[i]->accept(this);
     //print end of line after print statement;
     cout<<endl;
-    return;
+    call_next(printexp,this);
   }
 
   void validatevar(class ASTvariables* var)
@@ -254,6 +282,8 @@ public :
         map<pair<string,int>,int>::iterator it = this->getmapiterator(var) ;
         cin>>it->second;
       }
+
+    call_next(readexp,this);
     return;
   }
   void printvar(class ASTvariables* var)
