@@ -1,6 +1,9 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+#ifndef someincludeguard
+#define someincludeguard
+
 union node
 {
   int num;
@@ -233,4 +236,4 @@ class ASTreadexp: public ASTcode_line
   void addlabel(string label);
 };
 
-
+#endif

@@ -1,18 +1,39 @@
+#include <bits/stdc++.h>
 #include "ASTDefinitions.h"
+#include <llvm/IR/Module.h>
+#include <llvm/IR/Function.h>
+#include <llvm/IR/Type.h>
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/LLVMContext.h>
+#include <llvm/Target/TargetMachine.h>
+#include <llvm/IR/Instructions.h>
+#include <llvm/IR/CallingConv.h>
+#include <llvm/Bitcode/ReaderWriter.h>
+#include <llvm/IR/Verifier.h>
+#include <llvm/IR/IRBuilder.h>
+#include <llvm/Support/TargetSelect.h>
+#include <llvm/ExecutionEngine/GenericValue.h>
+#include <llvm/Support/raw_ostream.h>
+
 
 using namespace std;
 
-class Interpretor: public visitor
+class Codegen: public visitor
 {
 private:
   map<pair<string,int>,int>  symbol_table;
   map<string,int> array_size;
   map<string,class ASTcode_line*> label_map;
   map<ASTcode_line*,ASTcode_line*> nextline;
+  llvm::Module* module ;
+  map<pair<string,int>,llvm::Value*> symbol_table_llvm;
   
 public :
   void visit(class ASTprogram* program)
   {
+    module = new llvm::Module("main",llvm::getGlobalContext());
+    this->module = module;
+    cout<<"hello world"<<endl;
     program->decl_statements->accept(this);
         
     for (int i=0;i<program->code_statements->code_lines->size()-1;i++)
@@ -53,7 +74,13 @@ public :
                 exit(0);
               }
             else
-              symbol_table[make_pair(temp_variable->name,-1)]=0;
+              {
+                symbol_table[make_pair(temp_variable->name,-1)]=0;
+                cout<<"crearing a global varialve ";
+                llvm::GlobalVariable * globalInteger = new llvm::GlobalVariable(*module, llvm::Type::getInt64Ty(llvm::getGlobalContext()), false, llvm::GlobalValue::CommonLinkage, NULL, "main" );
+                globalInteger->setInitializer(llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvm::getGlobalContext()), 0, true));
+                symbol_table_llvm[make_pair(temp_variable->name,-1)]=globalInteger;
+              }
           }
         else if (temp_variable->var_type=="array")
           {
@@ -64,7 +91,10 @@ public :
                 for (int i=0;i<si;i++)
                  {
                     symbol_table[make_pair(temp_variable->name,i)]=0;
-                  }
+                    llvm::GlobalVariable * globalInteger = new llvm::GlobalVariable(*module, llvm::Type::getInt64Ty(llvm::getGlobalContext()), false, llvm::GlobalValue::CommonLinkage, NULL, "main" );
+                    globalInteger->setInitializer(llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvm::getGlobalContext()), 0, true));
+                    symbol_table_llvm[make_pair(temp_variable->name,i)]=globalInteger;
+                 }
               }
             else if (temp_variable->size_type=="identifier")
               {
@@ -91,6 +121,7 @@ public :
 
   void visit(class ASTif_statement* if_statement)
   {
+    
     if (if_statement->label!="NULL")
         label_map[if_statement->label]=if_statement;
     
@@ -205,7 +236,7 @@ public :
     if (assignment->label!="NULL")
       label_map[assignment->label]=assignment;
 
-    cout<<"visiting a  assignment"<<assignment->variable->name<<endl;
+    cout<<"Codegen visiting a  assignment"<<assignment->variable->name<<endl;
       
     int expval = evaluateexpr(assignment->exp);
     this->getmapiterator(assignment->variable)->second = expval;

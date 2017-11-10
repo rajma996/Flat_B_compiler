@@ -1,6 +1,8 @@
 %{
 #include<bits/stdc++.h>
+#include"ASTDefinitions.h"
 #include"Intrepretor.cpp"
+#include"Codegen.cpp"
   
 using namespace std;
 
@@ -166,7 +168,7 @@ withlabelreadexp : label colon read_token readexp     {$4->addlabel($1); $$=$4;}
 
 withoutlabelassignment : variables eq exp {$$ = new ASTassignment($1,$3,"NULL");};
 
-withlableassignment : label colon variables eq exp {cout<<$1<<' '<<' '<<$3<<endl; $$=new ASTassignment($3,$5,$1);};
+withlableassignment : label colon variables eq exp { $$=new ASTassignment($3,$5,$1);};
 
 withoutlabelprintexp : print printexp  {$$=$2;};
 
@@ -220,8 +222,8 @@ final_printexp : strings { $$=new ASTfinal_printexp($1,NULL); }
                | variables { $$ = new ASTfinal_printexp("none",$1); }
                ;
 
-readexp :      readexp comma variables { $$->push_back($3); cout<<"print vas"<<$3->name; }
-              | variables { $$ = new ASTreadexp($1); cout<<"print vas"<<$1->name<<endl; }
+readexp :      readexp comma variables { $$->push_back($3); }
+              | variables { $$ = new ASTreadexp($1);  }
                 ;
 
 
@@ -236,8 +238,8 @@ int main (int argc,char* argv[])
     
   yyparse ();
 
-  Interpretor* Interpr = new Interpretor();
-  start->accept(Interpr);
+  Codegen* temp = new Codegen();
+  start->accept(temp);
   
   return 0;
   

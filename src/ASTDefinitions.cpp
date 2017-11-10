@@ -13,7 +13,6 @@ ASTprogram::ASTprogram (class ASTdecl_statements* decl_statements, class ASTcode
 
 void ASTprogram::traverse()
 {
-  cout<<"Stasrting program execution"<<endl;
   this->decl_statements->traverse();
   this->code_statements->traverse();
 }
@@ -52,12 +51,8 @@ void ASTdecl_statement::push_back(class ASTliterals* literals)
 
 void ASTdecl_statement::traverse()
 {
-  cout<<"entering decl block"<<endl;
   for (int i=0;i<this->literals.size();i++)
-    {
-      cout<<"literal "<<i<<endl;
       literals[i]->traverse();
-    }
 }
 
 void ASTdecl_statement::accept(visitor* v)
@@ -72,7 +67,6 @@ ASTcode_statements::ASTcode_statements( vector<ASTcode_line*>* code_lines )
 
 void ASTcode_statements::traverse()
 {
-  cout<<"entering code statements"<<endl;
   return ;
 }
 
