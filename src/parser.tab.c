@@ -1557,7 +1557,7 @@ yyreduce:
 
   case 34:
 #line 171 "parser.y" /* yacc.c:1646  */
-    {cout<<(yyvsp[-4].id)<<' '<<' '<<(yyvsp[-2].variables)<<endl; (yyval.assignment)=new ASTassignment((yyvsp[-2].variables),(yyvsp[0].exp),(yyvsp[-4].id));}
+    { (yyval.assignment)=new ASTassignment((yyvsp[-2].variables),(yyvsp[0].exp),(yyvsp[-4].id));}
 #line 1562 "parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -1749,13 +1749,13 @@ yyreduce:
 
   case 66:
 #line 225 "parser.y" /* yacc.c:1646  */
-    { (yyval.readexp)->push_back((yyvsp[0].variables)); cout<<"print vas"<<(yyvsp[0].variables)->name; }
+    { (yyval.readexp)->push_back((yyvsp[0].variables)); }
 #line 1754 "parser.tab.c" /* yacc.c:1646  */
     break;
 
   case 67:
 #line 226 "parser.y" /* yacc.c:1646  */
-    { (yyval.readexp) = new ASTreadexp((yyvsp[0].variables)); cout<<"print vas"<<(yyvsp[0].variables)->name<<endl; }
+    { (yyval.readexp) = new ASTreadexp((yyvsp[0].variables));  }
 #line 1760 "parser.tab.c" /* yacc.c:1646  */
     break;
 
@@ -2000,11 +2000,10 @@ int main (int argc,char* argv[])
     
   yyparse ();
 
-  Interpretor* Interpr = new Interpretor();
-  start->accept(Interpr);
+  cout<<"coming bace"<<endl;
 
-  Codegen* temp = new Codegen();
-  start->accept(temp);
+  Codegen* code_generator = new Codegen();
+  code_generator->codegen(start);
   
   return 0;
   

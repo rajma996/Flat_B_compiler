@@ -205,7 +205,6 @@ public :
     if (assignment->label!="NULL")
       label_map[assignment->label]=assignment;
 
-    cout<<"visiting a  assignment"<<assignment->variable->name<<endl;
       
     int expval = evaluateexpr(assignment->exp);
     this->getmapiterator(assignment->variable)->second = expval;

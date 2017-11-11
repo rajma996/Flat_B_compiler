@@ -238,8 +238,10 @@ int main (int argc,char* argv[])
     
   yyparse ();
 
-  Codegen* temp = new Codegen();
-  start->accept(temp);
+  cout<<"coming bace"<<endl;
+
+  Codegen* code_generator = new Codegen();
+  code_generator->codegen(start);
   
   return 0;
   

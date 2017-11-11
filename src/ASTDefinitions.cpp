@@ -83,7 +83,9 @@ ASTliterals::ASTliterals(class ASTvariables* variables)
 void ASTliterals::traverse()
 {
   for(int i=0;i<this->variables.size();i++)
-    cout<<variables[i]->name<<endl;;
+    {
+      //cout<<variables[i]->name<<endl;;
+    }
 }
 
 void ASTliterals::push_back(class ASTvariables* variables)
