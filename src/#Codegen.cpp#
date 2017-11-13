@@ -63,6 +63,7 @@ public :
    void codegen(class ASTassignment* assignment)
    {
       llvm::Value* ans = evaluate_expr(assignment->exp);
+      
      // map<pair<string,int>,llvm::Value*>::iterator it;
      // it = symbol_table_llvm.find(make_pair(assignment->variable->name,-1));
      // llvm::Value* location = it->second;
